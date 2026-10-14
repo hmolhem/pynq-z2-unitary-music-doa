@@ -1,0 +1,48 @@
+# ---------- Python ----------
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ipynb_checkpoints/
+.venv/
+venv/
+*.egg-info/
+
+# ---------- Vitis HLS ----------
+# Keep sources, testbenches and hls_config.cfg; ignore generated solutions.
+hls/**/solution*/
+hls/**/hls/
+hls/**/_x/
+hls/**/.Xil/
+hls/**/*.log
+hls/**/vitis_hls.log
+hls/**/logs/
+hls/**/.settings/
+hls/**/.vitis/
+
+# ---------- Vivado ----------
+# Rebuild projects from the Tcl scripts in vivado/.
+vivado/**/*.cache/
+vivado/**/*.hw/
+vivado/**/*.runs/
+vivado/**/*.sim/
+vivado/**/*.gen/
+vivado/**/*.srcs/
+vivado/**/*.ip_user_files/
+vivado/**/*.xpr
+vivado/**/.Xil/
+*.jou
+*.str
+vivado*.log
+vivado*.backup.*
+webtalk*
+
+# Bitstreams go to GitHub Releases
+*.bit
+*.hwh
+*.xsa
+
+# ---------- OS / editors ----------
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
