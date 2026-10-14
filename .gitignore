@@ -46,3 +46,6 @@ webtalk*
 Thumbs.db
 .vscode/
 .idea/
+
+# g++ C-simulation build output
+hls/build/

@@ -3,8 +3,14 @@
 Fixed-point, real-valued (unitary) PCA/MUSIC direction-of-arrival accelerator
 for an 8-element MIMO virtual array on the PYNQ-Z2 (Zynq-7020).
 
-> **Status:** in development. The Python golden model is complete and tested;
-> the HLS kernels and the board integration are in progress.
+> **Status:** in development.
+>
+> | Block | Status |
+> |---|---|
+> | Python golden model | Done, 10 unit tests |
+> | HLS: unitary transform + real SCM | C simulation bit-exact (g++); Vitis synthesis pending |
+> | HLS: Jacobi EVD, MUSIC, top-level IP | Not started |
+> | Vivado block design, PYNQ overlay | Not started |
 
 ## Processing chain
 

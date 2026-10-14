@@ -13,10 +13,17 @@ floating-point reference and the fixed-point word-length model.
 | MUSIC denominator | `music_spectrum_signal_subspace` | PL kernel 3 |
 | Peak search + refine | `find_peaks` | PL kernel 3 / ARM |
 
+Bit-true models (must match the HLS output bit for bit):
+
+| File | Purpose |
+|---|---|
+| `scm_bitexact.py` | Integer-exact model of `hls/scm` |
+| `gen_scm_vectors.py` | Writes the `hls/scm/tb` test vectors and cross-checks against the float model |
+
 ## Run
 
 ```bash
-python -m pytest -q          # 9 tests
+python -m pytest -q          # 10 tests
 python sweep_rmse.py 200     # Monte Carlo sweep -> results/
 ```
 

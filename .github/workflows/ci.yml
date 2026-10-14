@@ -18,3 +18,14 @@ jobs:
       - name: Run tests
         working-directory: python
         run: python -m pytest -q
+
+  hls-csim:
+    name: HLS C simulation (g++, bit-exact)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch open-source ap_fixed headers
+        run: git clone --depth 1 https://github.com/Xilinx/HLS_arbitrary_Precision_Types "$RUNNER_TEMP/ap_types"
+      - name: SCM kernel
+        working-directory: hls
+        run: make csim-scm AP_INCLUDE="$RUNNER_TEMP/ap_types/include"

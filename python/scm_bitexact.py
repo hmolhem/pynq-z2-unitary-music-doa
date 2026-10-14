@@ -1,0 +1,92 @@
+"""
+scm_bitexact.py -- Integer-exact model of the HLS unitary SCM kernel.
+
+This is the *bit-true* reference for hls/scm. It mirrors the hardware
+arithmetic exactly, so the C/RTL simulation must match it bit for bit.
+
+Hardware arithmetic (N = 8, M = 128):
+
+    input  x[n]   : ap_fixed<16,1>   (raw int16, value = raw * 2^-15)
+    y = sqrt(2) Q^H x  (adds only, no multipliers):
+        n <  N/2 : y[n] = x[n] + x[N-1-n]
+        n >= N/2 : y[n] = -j (x[n-N/2] - x[N/2-1-(n-N/2)])   (see below)
+    S[p][q] = sum_m ( Re y_p Re y_q + Im y_p Im y_q )      exact integer
+    R[p][q] = S[p][q] / (2M)            (the 1/sqrt(2)^2 is folded in here)
+    output : ap_fixed<32,5, AP_RND, AP_SAT> (raw int32, value = raw * 2^-27)
+
+R equals Re{Q^H Rhat Q} = real_valued_scm() of the float golden model,
+up to one output LSB of rounding.
+"""
+
+from __future__ import annotations
+
+import numpy as np
+
+N = 8
+M = 128
+IN_FRAC = 15            # ap_fixed<16,1>
+OUT_W, OUT_I = 32, 5    # ap_fixed<32,5>
+OUT_FRAC = OUT_W - OUT_I
+LOG2_2M = int(np.log2(2 * M))
+
+
+def quantize_input(x: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """Complex frame in (-1,1) -> raw int16 (re, im), AP_RND + AP_SAT.
+
+    Done on the ARM before DMA. AP_RND = round half toward +inf = floor(v+0.5).
+    """
+    def q(v):
+        r = np.floor(np.asarray(v) * 2 ** IN_FRAC + 0.5)
+        return np.clip(r, -(2 ** 15), 2 ** 15 - 1).astype(np.int64)
+
+    return q(x.real), q(x.imag)
+
+
+def unitary_rows_int(xr: np.ndarray, xi: np.ndarray):
+    """y = sqrt(2) Q^H x on integers. Inputs shape (N, M). Returns (yr, yi).
+
+    Q^H = (1/sqrt 2) [[I, Pi], [-jI, jPi]]  (m = N/2):
+        top    i : x[i] + x[N-1-i]
+        bottom i : -j (x[i] - x[N-1-i]);  with a + jb = x[i] - x[N-1-i]
+                   -j(a + jb) = b - ja  ->  re = b, im = -a
+    """
+    m = N // 2
+    top_r = xr[:m] + xr[::-1][:m]
+    top_i = xi[:m] + xi[::-1][:m]
+    a = xr[:m] - xr[::-1][:m]
+    b = xi[:m] - xi[::-1][:m]
+    yr = np.vstack([top_r, b])
+    yi = np.vstack([top_i, -a])
+    return yr, yi
+
+
+def scm_unitary_raw(xr: np.ndarray, xi: np.ndarray) -> np.ndarray:
+    """Raw int32 output matrix (value = raw * 2^-27), exactly as the HLS kernel."""
+    yr, yi = unitary_rows_int(xr.astype(np.int64), xi.astype(np.int64))
+    s = yr @ yr.T + yi @ yi.T                    # exact, |s| < 2^41
+    shift = 2 * IN_FRAC + LOG2_2M - OUT_FRAC     # 30 + 8 - 27 = 11
+    raw = (s + (1 << (shift - 1))) >> shift      # AP_RND (floor(x + 0.5))
+    lo, hi = -(2 ** (OUT_W - 1)), 2 ** (OUT_W - 1) - 1
+    return np.clip(raw, lo, hi).astype(np.int64)  # AP_SAT
+
+
+def raw_to_float(raw: np.ndarray, frac: int = OUT_FRAC) -> np.ndarray:
+    return raw.astype(float) * 2.0 ** -frac
+
+
+def write_vectors(path_in: str, path_out: str, frames: list[np.ndarray]) -> None:
+    """Text vectors for the HLS testbench.
+
+    path_in : one line per sample "re im" (raw int16), snapshot-major order
+              (for m in 0..M-1: for n in 0..N-1), frames concatenated.
+    path_out: one line per frame, N*N raw int32 values, row-major.
+    """
+    with open(path_in, "w") as fi, open(path_out, "w") as fo:
+        fi.write(f"{len(frames)}\n")
+        fo.write(f"{len(frames)}\n")
+        for x in frames:
+            xr, xi = quantize_input(x)
+            for m in range(M):
+                for n in range(N):
+                    fi.write(f"{xr[n, m]} {xi[n, m]}\n")
+            fo.write(" ".join(str(v) for v in scm_unitary_raw(xr, xi).ravel()) + "\n")

@@ -77,3 +77,15 @@ def test_fixed_point_close_to_float():
     est_fx = unitary_music_doa(x, ARR, 2, GRID, qz=qz)
     est_fl = unitary_music_doa(x, ARR, 2, GRID)
     assert np.max(np.abs(est_fx - est_fl)) < 0.2
+
+
+def test_bitexact_scm_matches_float_within_half_lsb():
+    from scm_bitexact import quantize_input, raw_to_float, scm_unitary_raw
+    rng = np.random.default_rng(5)
+    for coherent in (False, True):
+        x = simulate_snapshots(ARR, [-10, 5], 10, 128, rng, coherent=coherent)
+        x = x / (1.001 * max(np.abs(x.real).max(), np.abs(x.imag).max()))
+        xr, xi = quantize_input(x)
+        xq = (xr + 1j * xi) * 2.0 ** -15
+        err = np.abs(raw_to_float(scm_unitary_raw(xr, xi)) - real_valued_scm(xq))
+        assert err.max() <= 2.0 ** -28 + 1e-15
