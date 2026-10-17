@@ -49,3 +49,7 @@ Thumbs.db
 
 # g++ C-simulation build output
 hls/build/
+
+# Vivado bring-up builds (rebuilt from Tcl)
+vivado/**/build/
+vivado/**/output/
