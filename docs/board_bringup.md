@@ -17,11 +17,11 @@ The DMA loopback below is first tried on 2.5 to measure the tool-version risk.
 ### Build (Windows, Vivado 2025.2)
 
 1. Get the repository: `git clone https://github.com/hmolhem/pynq-z2-unitary-music-doa`
-   into a path **without spaces**, e.g. `C:\work\`.
+   into a path **without spaces**, e.g. `C:\MyDocument\`.
 2. Start menu: open **Vivado 2025.2 Tcl Shell**.
 3. Run:
    ```tcl
-   cd C:/work/pynq-z2-unitary-music-doa/vivado/dma_loopback
+   cd C:/MyDocument/pynq-z2-unitary-music-doa/vivado/dma_loopback
    source build_dma_loopback.tcl
    ```
    Takes about 10-15 minutes. If it stops with "PYNQ-Z2 board files are not installed",
