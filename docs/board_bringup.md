@@ -10,6 +10,7 @@
 | 2026-10-17 | DMA loopback overlay build (Vivado 2025.2, Tcl, first run) | PASS: WNS = +2.422 ns at 100 MHz |
 | 2026-10-17 | DMA loopback on PYNQ 2.5 | PASS: counter (1024 words), random (4096 words), DOA-format frame (1024 words) bit-exact |
 | 2026-10-17 | Host-observed round trip, one 1024-word frame (200 runs) | median 546.2 us, min 536.7 us, max 1339.6 us |
+| 2026-10-17 | SCM overlay (Tier 1), WNS +2.157 ns | PASS: 50/50 frames bit-exact, DOA -10/5 deg recovered (uncorrelated and coherent); see `results/board/` |
 
 **Findings**
 
