@@ -30,9 +30,15 @@ proc find_pynq_z2_board {} {
     return [lindex [get_board_parts -quiet -latest_file_version *pynq-z2*] 0]
 }
 
+# Boards installed from the Vivado Store live in the per-user xhub folder, which
+# batch-mode Vivado does not search by default: add it before looking.
+set xhub_boards [file join $::env(APPDATA) Xilinx Vivado [version -short] xhub board_store xilinx_board_store]
+if {[file isdirectory $xhub_boards]} {
+    set_param board.repoPaths [list $xhub_boards]
+}
 set board_part [find_pynq_z2_board]
 if {$board_part eq ""} {
-    puts "INFO: PYNQ-Z2 board files not found, trying the Vivado board store..."
+    puts "INFO: PYNQ-Z2 board files not found, trying the Vivado board store (takes ~1 min)..."
     if {[catch {
         set store [xhub::get_xstores xilinx_board_store]
         xhub::refresh_catalog $store
