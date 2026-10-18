@@ -8,9 +8,10 @@ for an 8-element MIMO virtual array on the PYNQ-Z2 (Zynq-7020).
 > | Block | Status |
 > |---|---|
 > | Python golden model | Done, 10 unit tests |
-> | HLS: unitary transform + real SCM | C simulation bit-exact (g++); Vitis synthesis pending |
+> | HLS: unitary transform + real SCM | Vitis csim/cosim bit-exact, 1106 cycles (11.1 us), timing met, IP exported |
 > | HLS: Jacobi EVD, MUSIC, top-level IP | Not started |
-> | Vivado block design, PYNQ overlay | Not started |
+> | Board bring-up: AXI DMA loopback | PASS on PYNQ-Z2 (Vivado 2025.2 overlay on PYNQ 2.5) |
+> | SCM overlay on the board | In progress |
 
 ## Processing chain
 

@@ -2,7 +2,7 @@
 
 | Kernel | Folder | Status |
 |---|---|---|
-| Unitary transform + real SCM | `scm/` | C simulation bit-exact (g++), AXI-Stream IP. Vitis csim / synthesis / co-sim pending |
+| Unitary transform + real SCM | `scm/` | Vitis 2025.2: csim PASS, synthesis, cosim PASS (bit-exact), IP exported |
 | Jacobi EVD (PCA) | `jacobi/` | Not started |
 | MUSIC denominator + peaks | `music/` | Not started |
 | Top-level IP | `top/` | Not started |
@@ -22,8 +22,25 @@ R[p][q] = (1/2M) sum_m (Re y_p Re y_q + Im y_p Im y_q)   (36 upper-triangle entr
 | Sample format | `ap_fixed<16,1>` (frame scaled on the ARM so every component is in (-1, 1)) |
 | Accumulator | `ap_fixed<50,12>`, exact (no rounding inside the loop) |
 | Output | `ap_fixed<32,5,AP_RND,AP_SAT>`, symmetric 8 x 8; \|R\| <= 4 by construction, so saturation never triggers |
-| Schedule | snapshot loop pipelined at II = 8 (stream-rate bound); ~9 shared multipliers expected |
-| Expected latency | about 1024 + pipeline depth + 72 cycles, i.e. roughly 11 us at 100 MHz (to be confirmed by synthesis) |
+| Schedule | snapshot loop pipelined, II = 8 achieved (stream-rate bound), iteration latency 17 |
+| Latency | 1106 cycles = 11.06 us at 100 MHz (synthesis); 1104 cycles measured in co-simulation |
+
+### Vitis HLS 2025.2 results (`scm/reports/`)
+
+| Metric | D5 float SCM (predecessor) | Unitary fixed-point SCM |
+|---|---:|---:|
+| Latency (cycles) | up to 12,673 | **1,106** (cosim 1,104) |
+| Estimated clock (target 10 ns, 2.7 ns uncertainty) | 8.638 ns, slack -1.34 ns | **6.847 ns, slack +0.45 ns** |
+| DSP | 24 | 72 |
+| LUT | 11,812 | 3,973 |
+| FF | 11,655 | 5,748 |
+| BRAM | 0 | 0 |
+| C/RTL co-simulation | PASS (1 static frame) | PASS (10 frames, bit-exact) |
+
+11.5x lower latency, timing met, a third of the LUTs. HLS did **not** share multipliers
+across the 8-cycle initiation interval: all 72 products got their own DSP48. Limiting the
+multiplier count (`ALLOCATION` / `BIND_OP`) is the next DSE point if DSPs are needed for the
+Jacobi and MUSIC kernels.
 
 The predecessor floating-point SCM kernel needed up to 12,673 cycles because
 the floating-point adder recurrence limited the pipeline. Fixed-point

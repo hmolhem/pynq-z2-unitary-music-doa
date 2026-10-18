@@ -1,0 +1,173 @@
+
+
+================================================================
+== Vitis HLS Report for 'scm_unitary'
+================================================================
+* Date:           Sat Oct 17 20:59:26 2026
+
+* Version:        2025.2 (Build 6295257 on Nov 14 2025)
+* Project:        work
+* Solution:       hls (Vivado IP Flow Target)
+* Product family: zynq
+* Target device:  xc7z020-clg400-1
+
+
+================================================================
+== Performance Estimates
+================================================================
++ Timing: 
+    * Summary: 
+    +--------+----------+----------+------------+
+    |  Clock |  Target  | Estimated| Uncertainty|
+    +--------+----------+----------+------------+
+    |ap_clk  |  10.00 ns|  6.847 ns|     2.70 ns|
+    +--------+----------+----------+------------+
+
++ Latency: 
+    * Summary: 
+    +---------+---------+-----------+-----------+------+------+---------+
+    |  Latency (cycles) |   Latency (absolute)  |   Interval  | Pipeline|
+    |   min   |   max   |    min    |    max    |  min |  max |   Type  |
+    +---------+---------+-----------+-----------+------+------+---------+
+    |     1106|     1106|  11.060 us|  11.060 us|  1107|  1107|       no|
+    +---------+---------+-----------+-----------+------+------+---------+
+
+    + Detail: 
+        * Instance: 
+        +-----------------------------------------------+------------------------------------+---------+---------+-----------+-----------+-----+-----+-------------------+
+        |                                               |                                    |  Latency (cycles) |   Latency (absolute)  |  Interval |      Pipeline     |
+        |                    Instance                   |               Module               |   min   |   max   |    min    |    max    | min | max |        Type       |
+        +-----------------------------------------------+------------------------------------+---------+---------+-----------+-----------+-----+-----+-------------------+
+        |grp_scm_unitary_Pipeline_Snapshot_Loop_fu_200  |scm_unitary_Pipeline_Snapshot_Loop  |     1034|     1034|  10.340 us|  10.340 us|    0|    0|  loop pipeline stp|
+        |grp_scm_unitary_Pipeline_Out_Loop_fu_248       |scm_unitary_Pipeline_Out_Loop       |       67|       67|   0.670 us|   0.670 us|    0|    0|  loop pipeline stp|
+        +-----------------------------------------------+------------------------------------+---------+---------+-----------+-----------+-----+-----+-------------------+
+
+        * Loop: 
+        N/A
+
+
+
+================================================================
+== Utilization Estimates
+================================================================
+* Summary: 
++-----------------+---------+-----+--------+-------+-----+
+|       Name      | BRAM_18K| DSP |   FF   |  LUT  | URAM|
++-----------------+---------+-----+--------+-------+-----+
+|DSP              |        -|    -|       -|      -|    -|
+|Expression       |        -|    -|       0|      2|    -|
+|FIFO             |        -|    -|       -|      -|    -|
+|Instance         |        0|   72|    5699|   3889|    -|
+|Memory           |        -|    -|       -|      -|    -|
+|Multiplexer      |        -|    -|       0|     82|    -|
+|Register         |        -|    -|      49|      -|    -|
++-----------------+---------+-----+--------+-------+-----+
+|Total            |        0|   72|    5748|   3973|    0|
++-----------------+---------+-----+--------+-------+-----+
+|Available        |      280|  220|  106400|  53200|    0|
++-----------------+---------+-----+--------+-------+-----+
+|Utilization (%)  |        0|   32|       5|      7|    0|
++-----------------+---------+-----+--------+-------+-----+
+
++ Detail: 
+    * Instance: 
+    +-----------------------------------------------+------------------------------------+---------+----+------+------+-----+
+    |                    Instance                   |               Module               | BRAM_18K| DSP|  FF  |  LUT | URAM|
+    +-----------------------------------------------+------------------------------------+---------+----+------+------+-----+
+    |control_s_axi_U                                |control_s_axi                       |        0|   0|    36|    40|    0|
+    |grp_scm_unitary_Pipeline_Out_Loop_fu_248       |scm_unitary_Pipeline_Out_Loop       |        0|   0|  1153|   340|    0|
+    |grp_scm_unitary_Pipeline_Snapshot_Loop_fu_200  |scm_unitary_Pipeline_Snapshot_Loop  |        0|  72|  4510|  3509|    0|
+    +-----------------------------------------------+------------------------------------+---------+----+------+------+-----+
+    |Total                                          |                                    |        0|  72|  5699|  3889|    0|
+    +-----------------------------------------------+------------------------------------+---------+----+------+------+-----+
+
+    * DSP: 
+    N/A
+
+    * Memory: 
+    N/A
+
+    * FIFO: 
+    N/A
+
+    * Expression: 
+    +-------------------------------------------------------+----------+----+---+----+------------+------------+
+    |                     Variable Name                     | Operation| DSP| FF| LUT| Bitwidth P0| Bitwidth P1|
+    +-------------------------------------------------------+----------+----+---+----+------------+------------+
+    |grp_scm_unitary_Pipeline_Out_Loop_fu_248_r_out_TREADY  |       and|   0|  0|   2|           1|           1|
+    +-------------------------------------------------------+----------+----+---+----+------------+------------+
+    |Total                                                  |          |   0|  0|   2|           1|           1|
+    +-------------------------------------------------------+----------+----+---+----+------------+------------+
+
+    * Multiplexer: 
+    +--------------------------+----+-----------+-----+-----------+
+    |           Name           | LUT| Input Size| Bits| Total Bits|
+    +--------------------------+----+-----------+-----+-----------+
+    |ap_NS_fsm                 |  37|          7|    1|          7|
+    |r_out_TDATA_int_regslice  |   9|          2|   32|         64|
+    |r_out_TKEEP_int_regslice  |   9|          2|    4|          8|
+    |r_out_TLAST_int_regslice  |   9|          2|    1|          2|
+    |r_out_TSTRB_int_regslice  |   9|          2|    4|          8|
+    |x_in_TREADY_int_regslice  |   9|          2|    1|          2|
+    +--------------------------+----+-----------+-----+-----------+
+    |Total                     |  82|         17|   43|         91|
+    +--------------------------+----+-----------+-----+-----------+
+
+    * Register: 
+    +------------------------------------------------------------+----+----+-----+-----------+
+    |                            Name                            | FF | LUT| Bits| Const Bits|
+    +------------------------------------------------------------+----+----+-----+-----------+
+    |ap_CS_fsm                                                   |   6|   0|    6|          0|
+    |grp_scm_unitary_Pipeline_Out_Loop_fu_248_ap_start_reg       |   1|   0|    1|          0|
+    |grp_scm_unitary_Pipeline_Snapshot_Loop_fu_200_ap_start_reg  |   1|   0|    1|          0|
+    |r_out_TDATA_reg                                             |  32|   0|   32|          0|
+    |r_out_TKEEP_reg                                             |   4|   0|    4|          0|
+    |r_out_TLAST_reg                                             |   1|   0|    1|          0|
+    |r_out_TSTRB_reg                                             |   4|   0|    4|          0|
+    +------------------------------------------------------------+----+----+-----+-----------+
+    |Total                                                       |  49|   0|   49|          0|
+    +------------------------------------------------------------+----+----+-----+-----------+
+
+
+
+================================================================
+== Interface
+================================================================
+* Summary: 
++-----------------------+-----+-----+------------+----------------+--------------+
+|       RTL Ports       | Dir | Bits|  Protocol  |  Source Object |    C Type    |
++-----------------------+-----+-----+------------+----------------+--------------+
+|s_axi_control_AWVALID  |   in|    1|       s_axi|         control|   return void|
+|s_axi_control_AWREADY  |  out|    1|       s_axi|         control|   return void|
+|s_axi_control_AWADDR   |   in|    4|       s_axi|         control|   return void|
+|s_axi_control_WVALID   |   in|    1|       s_axi|         control|   return void|
+|s_axi_control_WREADY   |  out|    1|       s_axi|         control|   return void|
+|s_axi_control_WDATA    |   in|   32|       s_axi|         control|   return void|
+|s_axi_control_WSTRB    |   in|    4|       s_axi|         control|   return void|
+|s_axi_control_ARVALID  |   in|    1|       s_axi|         control|   return void|
+|s_axi_control_ARREADY  |  out|    1|       s_axi|         control|   return void|
+|s_axi_control_ARADDR   |   in|    4|       s_axi|         control|   return void|
+|s_axi_control_RVALID   |  out|    1|       s_axi|         control|   return void|
+|s_axi_control_RREADY   |   in|    1|       s_axi|         control|   return void|
+|s_axi_control_RDATA    |  out|   32|       s_axi|         control|   return void|
+|s_axi_control_RRESP    |  out|    2|       s_axi|         control|   return void|
+|s_axi_control_BVALID   |  out|    1|       s_axi|         control|   return void|
+|s_axi_control_BREADY   |   in|    1|       s_axi|         control|   return void|
+|s_axi_control_BRESP    |  out|    2|       s_axi|         control|   return void|
+|ap_clk                 |   in|    1|  ap_ctrl_hs|     scm_unitary|  return value|
+|ap_rst_n               |   in|    1|  ap_ctrl_hs|     scm_unitary|  return value|
+|interrupt              |  out|    1|  ap_ctrl_hs|     scm_unitary|  return value|
+|x_in_TDATA             |   in|   32|        axis|   x_in_V_data_V|       pointer|
+|x_in_TVALID            |   in|    1|        axis|   x_in_V_last_V|       pointer|
+|x_in_TREADY            |  out|    1|        axis|   x_in_V_last_V|       pointer|
+|x_in_TLAST             |   in|    1|        axis|   x_in_V_last_V|       pointer|
+|x_in_TKEEP             |   in|    4|        axis|   x_in_V_keep_V|       pointer|
+|x_in_TSTRB             |   in|    4|        axis|   x_in_V_strb_V|       pointer|
+|r_out_TDATA            |  out|   32|        axis|  r_out_V_data_V|       pointer|
+|r_out_TVALID           |  out|    1|        axis|  r_out_V_last_V|       pointer|
+|r_out_TREADY           |   in|    1|        axis|  r_out_V_last_V|       pointer|
+|r_out_TLAST            |  out|    1|        axis|  r_out_V_last_V|       pointer|
+|r_out_TKEEP            |  out|    4|        axis|  r_out_V_keep_V|       pointer|
+|r_out_TSTRB            |  out|    4|        axis|  r_out_V_strb_V|       pointer|
++-----------------------+-----+-----+------------+----------------+--------------+
+
