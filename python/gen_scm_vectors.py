@@ -1,6 +1,6 @@
 """Generate bit-exact test vectors for hls/scm and cross-check the model.
 
-Usage: python gen_scm_vectors.py  ->  hls/scm/tb/scm_in.txt, scm_out.txt
+Usage: python gen_scm_vectors.py  ->  hls/scm/tb/scm_vectors.h
 """
 
 import os
@@ -9,7 +9,7 @@ import numpy as np
 
 from doa_golden import MimoArray, normalize_frame, real_valued_scm, simulate_snapshots
 from scm_bitexact import (
-    M, N, quantize_input, raw_to_float, scm_unitary_raw, write_vectors,
+    M, N, quantize_input, raw_to_float, scm_unitary_raw, write_vectors_header,
 )
 
 OUT_DIR = os.path.join(os.path.dirname(__file__), "..", "hls", "scm", "tb")
@@ -42,8 +42,7 @@ def make_frames():
 def main():
     frames = make_frames()
     os.makedirs(OUT_DIR, exist_ok=True)
-    write_vectors(os.path.join(OUT_DIR, "scm_in.txt"),
-                  os.path.join(OUT_DIR, "scm_out.txt"), frames)
+    write_vectors_header(os.path.join(OUT_DIR, "scm_vectors.h"), frames)
 
     # Cross-check: bit-exact model vs float golden model on the same inputs
     worst = 0.0

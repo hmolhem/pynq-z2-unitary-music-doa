@@ -19,11 +19,11 @@ BUILD       = build
 $(BUILD):
 	mkdir -p $(BUILD)
 
-$(BUILD)/tb_scm: scm/scm_unitary.cpp scm/tb/tb_scm_unitary.cpp scm/scm_unitary.h | $(BUILD)
+$(BUILD)/tb_scm: scm/scm_unitary.cpp scm/tb/tb_scm_unitary.cpp scm/scm_unitary.h scm/tb/scm_vectors.h | $(BUILD)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) scm/scm_unitary.cpp scm/tb/tb_scm_unitary.cpp -o $@
 
 csim-scm: $(BUILD)/tb_scm
-	./$(BUILD)/tb_scm scm/tb
+	./$(BUILD)/tb_scm
 
 clean:
 	rm -rf $(BUILD)

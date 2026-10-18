@@ -10,6 +10,7 @@
 #ifndef SCM_UNITARY_H
 #define SCM_UNITARY_H
 
+#include <ap_axi_sdata.h>
 #include <ap_fixed.h>
 #include <ap_int.h>
 #include <hls_stream.h>
@@ -35,11 +36,17 @@ typedef ap_fixed<32, 5, AP_RND, AP_SAT> r_t;
 
 // One complex sample per 32-bit stream word: [15:0] = re, [31:16] = im.
 typedef ap_uint<32> word_t;
+// AXI4-Stream beat with TLAST (what AXI DMA produces and expects)
+typedef ap_axiu<32, 0, 0, 0> axis_t;
 
 }  // namespace scm
 
-// Reads N*M words in snapshot-major order (m outer, n inner) and writes
-// the full symmetric N x N matrix.
-void scm_unitary(hls::stream<scm::word_t> &x_in, scm::r_t R[scm::N][scm::N]);
+// Top-level IP for the PYNQ overlay.
+//   x_in : AXI4-Stream, N*M words per frame, snapshot-major (m outer,
+//          n inner); TLAST is ignored
+//   r_out: AXI4-Stream, N*N words per frame, row-major, raw r_t bits,
+//          TLAST on the last word (required by AXI DMA S2MM)
+//   control: AXI4-Lite (ap_start / ap_done)
+void scm_unitary(hls::stream<scm::axis_t> &x_in, hls::stream<scm::axis_t> &r_out);
 
 #endif  // SCM_UNITARY_H

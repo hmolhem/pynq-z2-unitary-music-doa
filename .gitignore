@@ -53,3 +53,5 @@ hls/build/
 # Vivado bring-up builds (rebuilt from Tcl)
 vivado/**/build/
 vivado/**/output/
+# Vitis HLS work directories (rebuilt by hls/run_hls.ps1)
+hls/**/work/
