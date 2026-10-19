@@ -29,3 +29,6 @@ jobs:
       - name: SCM kernel
         working-directory: hls
         run: make csim-scm AP_INCLUDE="$RUNNER_TEMP/ap_types/include"
+      - name: Jacobi EVD kernel
+        working-directory: hls
+        run: make csim-jacobi AP_INCLUDE="$RUNNER_TEMP/ap_types/include"

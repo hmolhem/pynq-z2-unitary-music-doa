@@ -3,7 +3,7 @@
 | Kernel | Folder | Status |
 |---|---|---|
 | Unitary transform + real SCM | `scm/` | Vitis 2025.2: csim PASS, synthesis, cosim PASS (bit-exact), IP exported |
-| Jacobi EVD (PCA) | `jacobi/` | Not started |
+| Jacobi EVD (PCA) | `jacobi/` | g++ csim PASS (bit-exact, 14 frames); Vitis synthesis/cosim pending |
 | MUSIC denominator + peaks | `music/` | Not started |
 | Top-level IP | `top/` | Not started |
 
@@ -57,6 +57,36 @@ The testbench requires every output bit and the TLAST position to match.
 A mutation check (replacing `AP_RND` by `AP_TRN` in the output format) makes
 the testbench fail with 225 mismatches, so it does detect rounding errors.
 
+## `jacobi/` -- cyclic Jacobi EVD (PCA), CORDIC rotations
+
+```text
+for 4 sweeps, for (p, q) in cyclic-by-row order (28 pairs):
+    phi   = atan2(2 a_pq, a_qq - a_pp)      CORDIC vectoring, inputs normalized, 24 steps
+    (c, s) = cos/sin(phi / 2)               CORDIC rotation, gain precompensated, 24 steps
+    A <- J^T A J  (rows/columns p, q; a_pq set to 0),  V <- V J
+```
+
+No square root and no division; the only multipliers are in the A and V updates.
+
+| Item | Value |
+|---|---|
+| Input | AXI4-Stream `r_in`, 64 words: R row-major, raw `ap_fixed<32,5>` (the `scm_unitary` output) |
+| Output | AXI4-Stream `e_out`, 72 words: 8 eigenvalues (raw Q7.25), then V row-major (raw Q2.30, column j = eigenvector j), TLAST on word 71; not sorted |
+| Control | AXI4-Lite `s_axi_control` |
+| Formats | A `ap_fixed<32,7>` (\|a\| <= 32), V, c, s `ap_fixed<32,2>`, angle 28 fractional bits, CORDIC registers 34 bits |
+| Rounding | every product rounded once (AP_RND, `(x + 2^29) >> 30`); diagonal from c^2, s^2, cs |
+| Accuracy (model) | max \|eig - eigh\| = 4.4e-6 (2.8e-7 of lambda_max), \|V^T V - I\| < 3e-7 |
+
+Verification: `python/jacobi_bitexact.py` (bit-true model), `python/gen_jacobi_vectors.py`
+(14 frames: the R matrices of the 10 SCM test frames, so Tier 1 -> Tier 2 is covered end to end,
+plus diagonal, equal-diagonal theta = pi/4, negative off-diagonal and near-full-scale matrices).
+Mutation check: replacing rounding by truncation gives 991 mismatches.
+
+End to end (`python/sweep_tier2_chain.py`, 200 trials per point, sources at -10/5 deg): the
+bit-exact chain (fixed-point SCM + Jacobi, MUSIC in float) has the same RMSE and success rate as
+the floating-point chain at every SNR from -10 to 20 dB, uncorrelated and coherent
+(`python/results/tier2_chain_vs_float.csv`).
+
 ## Running
 
 **Without Vitis (g++):**
@@ -64,7 +94,7 @@ the testbench fail with 225 mismatches, so it does detect rounding errors.
 ```bash
 git clone https://github.com/Xilinx/HLS_arbitrary_Precision_Types
 cd hls
-make csim-scm AP_INCLUDE=path/to/HLS_arbitrary_Precision_Types/include
+make csim AP_INCLUDE=path/to/HLS_arbitrary_Precision_Types/include   # both kernels
 ```
 
 `common/sim_shim/hls_stream.h` is a minimal stand-in used only by this Makefile.
@@ -74,6 +104,7 @@ make csim-scm AP_INCLUDE=path/to/HLS_arbitrary_Precision_Types/include
 ```powershell
 cd C:\MyDocument\pynq-z2-unitary-music-doa\hls
 powershell -ExecutionPolicy Bypass -File run_hls.ps1 -Kernel scm
+powershell -ExecutionPolicy Bypass -File run_hls.ps1 -Kernel jacobi
 ```
 
 Runs C simulation, C synthesis, co-simulation and IP export in `scm/work/`, and copies the

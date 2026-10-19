@@ -14,3 +14,8 @@
 | 2026-10-13 | Exact fixed-point accumulation (`ap_fixed<50,12>`), single rounding at the output (`ap_fixed<32,5>`, AP_RND/AP_SAT) | Bit-exact against a simple integer model; one-cycle add removes the float recurrence wall |
 | 2026-10-13 | Snapshot loop at II = 8 | Throughput is bound by one sample per clock; lets the 72 products share ~9 multipliers |
 | 2026-10-13 | C simulation also runs with g++ and Xilinx's open-source ap_types headers (CI) | Kernels are checked on every push without a Vitis licence |
+| 2026-10-18 | Jacobi rotation from CORDIC (vectoring for atan2, rotation for cos/sin), 24 iterations each | No square root or division; every step is a shift-add, so the integer model is bit-exact by construction |
+| 2026-10-18 | Normalize the CORDIC vectoring inputs to 30 bits | Late in the sweeps a_pq is tiny; normalization keeps the rotation angle at full precision |
+| 2026-10-18 | Symmetric update (only k != p, q in the loop; a_pp, a_qq from c^2, s^2, cs; a_pq := 0) | Exact symmetry, fewer multiplies, same as the classical two-sided rotation |
+| 2026-10-18 | Jacobi outputs unsorted eigenvalues and the full V | Sorting and subspace selection stay on the ARM in Tier 2; Tier 3 moves them into the PL |
+| 2026-10-18 | Tier 2 overlay chains scm_unitary -> jacobi_evd by AXI-Stream, one DMA | One call per frame; R never leaves the PL |

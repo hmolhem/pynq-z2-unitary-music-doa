@@ -19,11 +19,15 @@ Bit-true models (must match the HLS output bit for bit):
 |---|---|
 | `scm_bitexact.py` | Integer-exact model of `hls/scm` |
 | `gen_scm_vectors.py` | Writes the `hls/scm/tb` test vectors and cross-checks against the float model |
+| `jacobi_bitexact.py` | Integer-exact model of `hls/jacobi` (CORDIC angle and rotation, fixed-point updates) |
+| `gen_jacobi_vectors.py` | Writes the `hls/jacobi/tb` test vectors, reports accuracy against `eigh` |
+| `chain_bitexact.py` | Tier 2 chain: bit-exact SCM + Jacobi, MUSIC in float (what the board returns) |
+| `sweep_tier2_chain.py` | Monte Carlo: Tier 2 chain vs float -> `results/tier2_chain_vs_float.csv` |
 
 ## Run
 
 ```bash
-python -m pytest -q          # 10 tests
+python -m pytest -q          # 14 tests
 python sweep_rmse.py 200     # Monte Carlo sweep -> results/
 ```
 
