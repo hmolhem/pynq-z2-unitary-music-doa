@@ -1,0 +1,373 @@
+
+
+================================================================
+== Synthesis Summary Report of 'jacobi_evd'
+================================================================
++ General Information: 
+    * Date:           Tue Oct 20 17:43:45 2026
+    * Version:        2025.2 (Build 6295257 on Nov 14 2025)
+    * Project:        work
+    * Solution:       hls (Vivado IP Flow Target)
+    * Product family: zynq
+    * Target device:  xc7z020-clg400-1
+    
+
+* Performance & Resource Estimates: 
++------------------------------------------+--------+---------------+----------+---------+------+----------+---------+-----------+-------+------+----------+-------------+-------------+-----+
+|                  Modules                 |  Issue |               | Iteration|         | Trip |          |       Latency       |       |      |          |             |             |     |
+|                  & Loops                 |  Type  | Violation Type|  Latency | Interval| Count| Pipelined| (cycles)|    (ns)   | Slack | BRAM |    DSP   |      FF     |     LUT     | URAM|
++------------------------------------------+--------+---------------+----------+---------+------+----------+---------+-----------+-------+------+----------+-------------+-------------+-----+
+|+ jacobi_evd                              |  Timing|              -|         -|    10122|     -|        no|    10121|  1.012e+05|  -2.31|     -|  48 (21%)|  11189 (10%)|  13209 (24%)|    -|
+| + jacobi_evd_Pipeline_Read_Loop          |       -|              -|         -|        -|     -|       yes|       66|    660.000|   2.25|     -|         -|     17 (~0%)|    1568 (2%)|    -|
+|  o Read_Loop                             |       -|              -|         2|        1|    64|       yes|       64|    640.000|   7.30|     -|         -|            -|            -|    -|
+| + jacobi_evd_Pipeline_Out_Loop           |       -|              -|         -|        -|     -|       yes|       74|    740.000|   0.38|     -|         -|    307 (~0%)|     934 (1%)|    -|
+|  o Out_Loop                              |       -|              -|         2|        1|    72|       yes|       72|    720.000|   7.30|     -|         -|            -|            -|    -|
+| o Sweep_Loop                             |       -|              -|      2494|        -|     4|        no|     9976|  9.976e+04|   7.30|     -|         -|            -|            -|    -|
+|  o Pair_Loop                             |       -|              -|        89|        -|    28|        no|     2492|  2.492e+04|   7.30|     -|         -|            -|            -|    -|
+|   + cordic_vectoring                     |  Timing|              -|         -|       33|     -|        no|       33|    330.000|  -2.31|     -|         -|    371 (~0%)|    1581 (2%)|    -|
+|    + cordic_vectoring_Pipeline_Vec_Loop  |  Timing|              -|         -|        -|     -|       yes|       26|    260.000|  -2.31|     -|         -|    141 (~0%)|     660 (1%)|    -|
+|     o Vec_Loop                           |       -|              -|         2|        1|    24|       yes|       24|    240.000|   7.30|     -|         -|            -|            -|    -|
+|   + cordic_rotation                      |  Timing|              -|         -|        -|     -|       yes|       26|    260.000|  -2.31|     -|         -|    113 (~0%)|     677 (1%)|    -|
+|    o Rot_Loop                            |       -|              -|         2|        1|    24|       yes|       24|    240.000|   7.30|     -|         -|            -|            -|    -|
+|   + jacobi_evd_Pipeline_Update_Loop      |       -|              -|         -|        -|     -|       yes|       16|    160.000|   0.39|     -|  28 (12%)|    2452 (2%)|    4712 (8%)|    -|
+|    o Update_Loop                         |       -|              -|         8|        1|     8|       yes|       14|    140.000|   7.30|     -|         -|            -|            -|    -|
++------------------------------------------+--------+---------------+----------+---------+------+----------+---------+-----------+-------+------+----------+-------------+-------------+-----+
+    Name Prefix: '+' for module, 'o' for loop, '*' for dataflow
+
+
+================================================================
+== HW Interfaces
+================================================================
+* S_AXILITE Interfaces
++---------------+------------+---------------+
+| Interface     | Data Width | Address Width |
++---------------+------------+---------------+
+| s_axi_control | 32         | 4             |
++---------------+------------+---------------+
+
+* S_AXILITE Registers
++---------------+----------+--------+-------+--------+----------------------------------+----------------------------------------------------------------------+
+| Interface     | Register | Offset | Width | Access | Description                      | Bit Fields                                                           |
++---------------+----------+--------+-------+--------+----------------------------------+----------------------------------------------------------------------+
+| s_axi_control | CTRL     | 0x00   | 32    | RW     | Control signals                  | 0=AP_START 1=AP_DONE 2=AP_IDLE 3=AP_READY 7=AUTO_RESTART 9=INTERRUPT |
+| s_axi_control | GIER     | 0x04   | 32    | RW     | Global Interrupt Enable Register | 0=Enable                                                             |
+| s_axi_control | IP_IER   | 0x08   | 32    | RW     | IP Interrupt Enable Register     | 0=CHAN0_INT_EN 1=CHAN1_INT_EN                                        |
+| s_axi_control | IP_ISR   | 0x0c   | 32    | RW     | IP Interrupt Status Register     | 0=CHAN0_INT_ST 1=CHAN1_INT_ST                                        |
++---------------+----------+--------+-------+--------+----------------------------------+----------------------------------------------------------------------+
+
+* AXIS
++-----------+-----------+---------------+-------+-------+-------+--------+-------+--------+
+| Interface | Direction | Register Mode | TDATA | TKEEP | TLAST | TREADY | TSTRB | TVALID |
++-----------+-----------+---------------+-------+-------+-------+--------+-------+--------+
+| e_out     | out       | both          | 32    | 4     | 1     | 1      | 4     | 1      |
+| r_in      | in        | both          | 32    | 4     | 1     | 1      | 4     | 1      |
++-----------+-----------+---------------+-------+-------+-------+--------+-------+--------+
+
+* TOP LEVEL CONTROL
++-----------+------------+-----------+
+| Interface | Type       | Ports     |
++-----------+------------+-----------+
+| ap_clk    | clock      | ap_clk    |
+| ap_rst_n  | reset      | ap_rst_n  |
+| interrupt | interrupt  | interrupt |
+| ap_ctrl   | ap_ctrl_hs |           |
++-----------+------------+-----------+
+
+
+================================================================
+== SW I/O Information
+================================================================
+* Top Function Arguments
++----------+-----------+------------------------------------------------------------------------------+
+| Argument | Direction | Datatype                                                                     |
++----------+-----------+------------------------------------------------------------------------------+
+| r_in     | in        | stream<hls::axis<ap_uint<32>, 0UL, 0UL, 0UL, (unsigned char)'8', false>, 0>& |
+| e_out    | out       | stream<hls::axis<ap_uint<32>, 0UL, 0UL, 0UL, (unsigned char)'8', false>, 0>& |
++----------+-----------+------------------------------------------------------------------------------+
+
+* SW-to-HW Mapping
++----------+--------------+-----------+
+| Argument | HW Interface | HW Type   |
++----------+--------------+-----------+
+| r_in     | r_in         | interface |
+| e_out    | e_out        | interface |
++----------+--------------+-----------+
+
+
+================================================================
+== Bind Op Report
+================================================================
++----------------------------------------+-----+--------+----------------+-----------+--------------------------+---------+
+| Name                                   | DSP | Pragma | Variable       | Op        | Impl                     | Latency |
++----------------------------------------+-----+--------+----------------+-----------+--------------------------+---------+
+| + jacobi_evd                           | 48  |        |                |           |                          |         |
+|   icmp_ln118_fu_1438_p2                |     |        | icmp_ln118     | seteq     | auto                     | 0       |
+|   sw_2_fu_1444_p2                      |     |        | sw_2           | add       | fabric                   | 0       |
+|   icmp_ln120_fu_1710_p2                |     |        | icmp_ln120     | seteq     | auto                     | 0       |
+|   add_ln120_fu_1716_p2                 |     |        | add_ln120      | add       | fabric                   | 0       |
+|   sparsemux_15_3_32_1_1_U481           |     |        | tmp            | sparsemux | compactencoding_dontcare | 0       |
+|   sparsemux_15_3_32_1_1_U482           |     |        | tmp_1          | sparsemux | compactencoding_dontcare | 0       |
+|   sparsemux_15_3_32_1_1_U483           |     |        | tmp_2          | sparsemux | compactencoding_dontcare | 0       |
+|   sparsemux_15_3_32_1_1_U484           |     |        | tmp_3          | sparsemux | compactencoding_dontcare | 0       |
+|   sparsemux_15_3_32_1_1_U485           |     |        | tmp_4          | sparsemux | compactencoding_dontcare | 0       |
+|   sparsemux_15_3_32_1_1_U486           |     |        | tmp_5          | sparsemux | compactencoding_dontcare | 0       |
+|   sparsemux_15_3_32_1_1_U487           |     |        | tmp_6          | sparsemux | compactencoding_dontcare | 0       |
+|   sparsemux_15_3_32_1_1_U488           |     |        | app            | sparsemux | compactencoding_dontcare | 0       |
+|   sparsemux_15_3_32_1_1_U489           |     |        | tmp_8          | sparsemux | compactencoding_dontcare | 0       |
+|   sparsemux_15_3_32_1_1_U490           |     |        | tmp_9          | sparsemux | compactencoding_dontcare | 0       |
+|   sparsemux_15_3_32_1_1_U491           |     |        | tmp_s          | sparsemux | compactencoding_dontcare | 0       |
+|   sparsemux_15_3_32_1_1_U492           |     |        | tmp_7          | sparsemux | compactencoding_dontcare | 0       |
+|   sparsemux_15_3_32_1_1_U493           |     |        | tmp_10         | sparsemux | compactencoding_dontcare | 0       |
+|   sparsemux_15_3_32_1_1_U494           |     |        | tmp_11         | sparsemux | compactencoding_dontcare | 0       |
+|   sparsemux_15_3_32_1_1_U495           |     |        | tmp_12         | sparsemux | compactencoding_dontcare | 0       |
+|   sparsemux_15_3_32_1_1_U496           |     |        | aqq            | sparsemux | compactencoding_dontcare | 0       |
+|   sparsemux_15_3_32_1_1_U497           |     |        | tmp_13         | sparsemux | compactencoding_dontcare | 0       |
+|   sparsemux_15_3_32_1_1_U498           |     |        | apq            | sparsemux | compactencoding_dontcare | 0       |
+|   x_fu_2386_p2                         |     |        | x              | sub       | fabric                   | 0       |
+|   x_4_fu_2415_p2                       |     |        | x_4            | sub       | fabric                   | 0       |
+|   y_1_fu_2421_p2                       |     |        | y_1            | sub       | fabric                   | 0       |
+|   x_5_fu_2427_p3                       |     |        | x_5            | select    | auto_sel                 | 0       |
+|   y_2_fu_2435_p3                       |     |        | y_2            | select    | auto_sel                 | 0       |
+|   mul_32s_32s_62_2_1_U477              | 4   |        | x_14           | mul       | auto                     | 1       |
+|   mul_32s_32s_62_2_1_U478              | 4   |        | x_13           | mul       | auto                     | 1       |
+|   mul_32s_32s_62_2_1_U479              | 4   |        | x_15           | mul       | auto                     | 1       |
+|   add_ln32_fu_2473_p2                  |     |        | add_ln32       | add       | fabric                   | 0       |
+|   add_ln32_1_fu_2479_p2                |     |        | add_ln32_1     | add       | fabric                   | 0       |
+|   add_ln32_2_fu_2485_p2                |     |        | add_ln32_2     | add       | fabric                   | 0       |
+|   mul_32s_32s_61_2_1_U476              | 4   |        | mul_ln158      | mul       | auto                     | 1       |
+|   mul_32s_32s_62_2_1_U477              | 4   |        | mul_ln159      | mul       | auto                     | 1       |
+|   sub_ln159_fu_2556_p2                 |     |        | sub_ln159      | sub       | fabric                   | 0       |
+|   mul_32s_32s_62_2_1_U478              | 4   |        | mul_ln159_1    | mul       | auto                     | 1       |
+|   mul_32s_32s_62_2_1_U479              | 4   |        | mul_ln160      | mul       | auto                     | 1       |
+|   mul_32s_32s_62_2_1_U480              | 4   |        | mul_ln160_1    | mul       | auto                     | 1       |
+|   add_ln160_fu_2562_p2                 |     |        | add_ln160      | add       | fabric                   | 0       |
+|  + jacobi_evd_Pipeline_Read_Loop       | 0   |        |                |           |                          |         |
+|    icmp_ln110_fu_1160_p2               |     |        | icmp_ln110     | seteq     | auto                     | 0       |
+|    i_2_fu_1166_p2                      |     |        | i_2            | add       | fabric                   | 0       |
+|    add_ln113_fu_1218_p2                |     |        | add_ln113      | add       | fabric                   | 0       |
+|    icmp_ln114_fu_1622_p2               |     |        | icmp_ln114     | seteq     | auto                     | 0       |
+|    select_ln114_fu_1626_p3             |     |        | select_ln114   | select    | auto_sel                 | 0       |
+|  + jacobi_evd_Pipeline_Out_Loop        | 0   |        |                |           |                          |         |
+|    icmp_ln168_fu_1146_p2               |     |        | icmp_ln168     | seteq     | auto                     | 0       |
+|    add_ln168_fu_1152_p2                |     |        | add_ln168      | add       | fabric                   | 0       |
+|    icmp_ln172_fu_1172_p2               |     |        | icmp_ln172     | seteq     | auto                     | 0       |
+|    sparsemux_17_3_32_1_1_U326          |     |        | tmp_14         | sparsemux | compactencoding_dontcare | 0       |
+|    sparsemux_17_3_32_1_1_U327          |     |        | tmp_15         | sparsemux | compactencoding_dontcare | 0       |
+|    sparsemux_17_3_32_1_1_U328          |     |        | tmp_16         | sparsemux | compactencoding_dontcare | 0       |
+|    sparsemux_17_3_32_1_1_U329          |     |        | tmp_17         | sparsemux | compactencoding_dontcare | 0       |
+|    sparsemux_17_3_32_1_1_U330          |     |        | tmp_18         | sparsemux | compactencoding_dontcare | 0       |
+|    sparsemux_17_3_32_1_1_U331          |     |        | tmp_19         | sparsemux | compactencoding_dontcare | 0       |
+|    sparsemux_17_3_32_1_1_U332          |     |        | tmp_20         | sparsemux | compactencoding_dontcare | 0       |
+|    sparsemux_17_3_32_1_1_U333          |     |        | tmp_21         | sparsemux | compactencoding_dontcare | 0       |
+|    sparsemux_17_3_32_1_1_U334          |     |        | tmp_22         | sparsemux | compactencoding_dontcare | 0       |
+|    add_ln172_fu_1538_p2                |     |        | add_ln172      | add       | fabric                   | 0       |
+|    sub_ln172_fu_1560_p2                |     |        | sub_ln172      | sub       | fabric                   | 0       |
+|    sub_ln172_1_fu_1917_p2              |     |        | sub_ln172_1    | sub       | fabric                   | 0       |
+|    tmp_31_fu_1928_p18                  |     |        | select_ln172   | select    | auto_sel                 | 0       |
+|    sparsemux_17_3_32_1_1_U335          |     |        | tmp_23         | sparsemux | compactencoding_dontcare | 0       |
+|    sparsemux_17_3_32_1_1_U336          |     |        | tmp_24         | sparsemux | compactencoding_dontcare | 0       |
+|    sparsemux_17_3_32_1_1_U337          |     |        | tmp_25         | sparsemux | compactencoding_dontcare | 0       |
+|    sparsemux_17_3_32_1_1_U338          |     |        | tmp_26         | sparsemux | compactencoding_dontcare | 0       |
+|    sparsemux_17_3_32_1_1_U339          |     |        | tmp_27         | sparsemux | compactencoding_dontcare | 0       |
+|    sparsemux_17_3_32_1_1_U340          |     |        | tmp_28         | sparsemux | compactencoding_dontcare | 0       |
+|    sparsemux_17_3_32_1_1_U341          |     |        | tmp_29         | sparsemux | compactencoding_dontcare | 0       |
+|    sparsemux_17_3_32_1_1_U342          |     |        | tmp_30         | sparsemux | compactencoding_dontcare | 0       |
+|    sparsemux_17_3_32_1_1_U343          |     |        | tmp_31         | sparsemux | compactencoding_dontcare | 0       |
+|    e_out_TDATA                         |     |        | p_0            | select    | auto_sel                 | 0       |
+|    icmp_ln175_fu_1906_p2               |     |        | icmp_ln175     | seteq     | auto                     | 0       |
+|  + cordic_vectoring                    | 0   |        |                |           |                          |         |
+|    ay_fu_222_p2                        |     |        | ay             | sub       | fabric                   | 0       |
+|    ay_1_fu_228_p3                      |     |        | ay_1           | select    | auto_sel                 | 0       |
+|    icmp_ln41_fu_236_p2                 |     |        | icmp_ln41      | setlt     | auto                     | 0       |
+|    m_fu_242_p3                         |     |        | m              | select    | auto_sel                 | 0       |
+|    icmp_ln42_fu_253_p2                 |     |        | icmp_ln42      | seteq     | auto                     | 0       |
+|    select_ln49_fu_352_p3               |     |        | select_ln49    | select    | auto_sel                 | 0       |
+|    or_ln49_fu_360_p2                   |     |        | or_ln49        | or        | auto                     | 0       |
+|    select_ln49_1_fu_366_p3             |     |        | select_ln49_1  | select    | auto_sel                 | 0       |
+|    select_ln49_2_fu_378_p3             |     |        | select_ln49_2  | select    | auto_sel                 | 0       |
+|    or_ln49_1_fu_386_p2                 |     |        | or_ln49_1      | or        | auto                     | 0       |
+|    select_ln49_3_fu_392_p3             |     |        | select_ln49_3  | select    | auto_sel                 | 0       |
+|    select_ln49_4_fu_400_p3             |     |        | select_ln49_4  | select    | auto_sel                 | 0       |
+|    or_ln49_2_fu_408_p2                 |     |        | or_ln49_2      | or        | auto                     | 0       |
+|    select_ln49_5_fu_414_p3             |     |        | select_ln49_5  | select    | auto_sel                 | 0       |
+|    select_ln49_6_fu_426_p3             |     |        | select_ln49_6  | select    | auto_sel                 | 0       |
+|    or_ln49_3_fu_434_p2                 |     |        | or_ln49_3      | or        | auto                     | 0       |
+|    select_ln49_7_fu_440_p3             |     |        | select_ln49_7  | select    | auto_sel                 | 0       |
+|    select_ln49_8_fu_448_p3             |     |        | select_ln49_8  | select    | auto_sel                 | 0       |
+|    or_ln49_4_fu_456_p2                 |     |        | or_ln49_4      | or        | auto                     | 0       |
+|    select_ln49_9_fu_462_p3             |     |        | select_ln49_9  | select    | auto_sel                 | 0       |
+|    select_ln49_10_fu_470_p3            |     |        | select_ln49_10 | select    | auto_sel                 | 0       |
+|    or_ln49_5_fu_478_p2                 |     |        | or_ln49_5      | or        | auto                     | 0       |
+|    select_ln49_11_fu_484_p3            |     |        | select_ln49_11 | select    | auto_sel                 | 0       |
+|    select_ln49_12_fu_492_p3            |     |        | select_ln49_12 | select    | auto_sel                 | 0       |
+|    or_ln49_6_fu_500_p2                 |     |        | or_ln49_6      | or        | auto                     | 0       |
+|    select_ln49_13_fu_506_p3            |     |        | select_ln49_13 | select    | auto_sel                 | 0       |
+|    select_ln49_14_fu_598_p3            |     |        | select_ln49_14 | select    | auto_sel                 | 0       |
+|    or_ln49_7_fu_606_p2                 |     |        | or_ln49_7      | or        | auto                     | 0       |
+|    select_ln49_15_fu_612_p3            |     |        | select_ln49_15 | select    | auto_sel                 | 0       |
+|    select_ln49_16_fu_619_p3            |     |        | select_ln49_16 | select    | auto_sel                 | 0       |
+|    or_ln49_8_fu_627_p2                 |     |        | or_ln49_8      | or        | auto                     | 0       |
+|    select_ln49_17_fu_633_p3            |     |        | select_ln49_17 | select    | auto_sel                 | 0       |
+|    select_ln49_18_fu_641_p3            |     |        | select_ln49_18 | select    | auto_sel                 | 0       |
+|    or_ln49_9_fu_649_p2                 |     |        | or_ln49_9      | or        | auto                     | 0       |
+|    select_ln49_19_fu_655_p3            |     |        | select_ln49_19 | select    | auto_sel                 | 0       |
+|    select_ln49_20_fu_663_p3            |     |        | select_ln49_20 | select    | auto_sel                 | 0       |
+|    or_ln49_10_fu_671_p2                |     |        | or_ln49_10     | or        | auto                     | 0       |
+|    select_ln49_21_fu_677_p3            |     |        | select_ln49_21 | select    | auto_sel                 | 0       |
+|    select_ln49_22_fu_685_p3            |     |        | select_ln49_22 | select    | auto_sel                 | 0       |
+|    or_ln49_11_fu_693_p2                |     |        | or_ln49_11     | or        | auto                     | 0       |
+|    select_ln49_23_fu_699_p3            |     |        | select_ln49_23 | select    | auto_sel                 | 0       |
+|    select_ln49_24_fu_707_p3            |     |        | select_ln49_24 | select    | auto_sel                 | 0       |
+|    or_ln49_12_fu_715_p2                |     |        | or_ln49_12     | or        | auto                     | 0       |
+|    select_ln49_25_fu_721_p3            |     |        | select_ln49_25 | select    | auto_sel                 | 0       |
+|    select_ln49_26_fu_778_p3            |     |        | select_ln49_26 | select    | auto_sel                 | 0       |
+|    or_ln49_13_fu_786_p2                |     |        | or_ln49_13     | or        | auto                     | 0       |
+|    select_ln49_27_fu_792_p3            |     |        | select_ln49_27 | select    | auto_sel                 | 0       |
+|    xor_ln49_fu_799_p2                  |     |        | xor_ln49       | xor       | auto                     | 0       |
+|    or_ln49_14_fu_809_p2                |     |        | or_ln49_14     | or        | auto                     | 0       |
+|    select_ln49_28_fu_815_p3            |     |        | select_ln49_28 | select    | auto_sel                 | 0       |
+|    select_ln49_29_fu_827_p3            |     |        | select_ln49_29 | select    | auto_sel                 | 0       |
+|    or_ln49_15_fu_835_p2                |     |        | or_ln49_15     | or        | auto                     | 0       |
+|    select_ln49_30_fu_841_p3            |     |        | select_ln49_30 | select    | auto_sel                 | 0       |
+|    sh_fu_849_p3                        |     |        | sh             | select    | auto_sel                 | 0       |
+|    icmp_ln50_fu_857_p2                 |     |        | icmp_ln50      | setgt     | auto                     | 0       |
+|    x_22_fu_948_p2                      |     |        | x_20           | shl       | auto_pipe                | 0       |
+|    y_6_fu_929_p2                       |     |        | y_7            | shl       | auto_pipe                | 0       |
+|    sub_ln54_fu_871_p2                  |     |        | sub_ln54       | sub       | fabric                   | 0       |
+|    x_22_fu_948_p4                      |     |        | x_21           | lshr      | auto_pipe                | 0       |
+|    y_6_fu_929_p4                       |     |        | y_8            | ashr      | auto_pipe                | 0       |
+|    xor_ln50_fu_877_p2                  |     |        | xor_ln50       | xor       | auto                     | 0       |
+|    and_ln53_fu_883_p2                  |     |        | and_ln53       | and       | auto                     | 0       |
+|    sparsemux_7_2_34_1_1_U137           |     |        | y_6            | sparsemux | onehotencoding_realdef   | 0       |
+|    sparsemux_7_2_34_1_1_U138           |     |        | x_22           | sparsemux | onehotencoding_realdef   | 0       |
+|   + cordic_vectoring_Pipeline_Vec_Loop | 0   |        |                |           |                          |         |
+|     icmp_ln59_fu_113_p2                |     |        | icmp_ln59      | seteq     | auto                     | 0       |
+|     add_ln59_fu_119_p2                 |     |        | add_ln59       | add       | fabric                   | 0       |
+|     xs_fu_147_p2                       |     |        | xs             | ashr      | auto_pipe                | 0       |
+|     ys_fu_153_p2                       |     |        | ys             | ashr      | auto_pipe                | 0       |
+|     x_16_fu_171_p2                     |     |        | x_16           | add       | fabric                   | 0       |
+|     y_3_fu_177_p2                      |     |        | y_3            | sub       | fabric                   | 0       |
+|     add_ln65_fu_183_p2                 |     |        | add_ln65       | add       | fabric                   | 0       |
+|     x_17_fu_189_p2                     |     |        | x_17           | sub       | fabric                   | 0       |
+|     y_4_fu_195_p2                      |     |        | y_4            | add       | fabric                   | 0       |
+|     sub_ln69_fu_201_p2                 |     |        | sub_ln69       | sub       | fabric                   | 0       |
+|     storemerge20_fu_207_p3             |     |        | storemerge20   | select    | auto_sel                 | 0       |
+|     x_19_fu_215_p3                     |     |        | x_19           | select    | auto_sel                 | 0       |
+|     y_5_fu_223_p3                      |     |        | y_5            | select    | auto_sel                 | 0       |
+|  + cordic_rotation                     | 0   |        |                |           |                          |         |
+|    icmp_ln81_fu_104_p2                 |     |        | icmp_ln81      | seteq     | auto                     | 0       |
+|    add_ln81_fu_110_p2                  |     |        | add_ln81       | add       | fabric                   | 0       |
+|    xs_fu_138_p2                        |     |        | xs             | ashr      | auto_pipe                | 0       |
+|    ys_fu_144_p2                        |     |        | ys             | ashr      | auto_pipe                | 0       |
+|    x_fu_162_p2                         |     |        | x              | sub       | fabric                   | 0       |
+|    y_9_fu_168_p2                       |     |        | y_9            | add       | fabric                   | 0       |
+|    z_2_fu_174_p2                       |     |        | z_2            | sub       | fabric                   | 0       |
+|    x_23_fu_180_p2                      |     |        | x_23           | add       | fabric                   | 0       |
+|    y_10_fu_186_p2                      |     |        | y_10           | sub       | fabric                   | 0       |
+|    z_3_fu_192_p2                       |     |        | z_3            | add       | fabric                   | 0       |
+|    x_1_fu_198_p3                       |     |        | x_1            | select    | auto_sel                 | 0       |
+|    y_1_fu_206_p3                       |     |        | y_1            | select    | auto_sel                 | 0       |
+|    z_1_fu_214_p3                       |     |        | z_1            | select    | auto_sel                 | 0       |
+|  + jacobi_evd_Pipeline_Update_Loop     | 28  |        |                |           |                          |         |
+|    icmp_ln140_fu_2188_p2               |     |        | icmp_ln140     | seteq     | auto                     | 0       |
+|    add_ln140_fu_2194_p2                |     |        | add_ln140      | add       | fabric                   | 0       |
+|    icmp_ln144_fu_2204_p2               |     |        | icmp_ln144     | setne     | auto                     | 0       |
+|    icmp_ln144_1_fu_2210_p2             |     |        | icmp_ln144_1   | setne     | auto                     | 0       |
+|    and_ln144_fu_2216_p2                |     |        | and_ln144      | and       | auto                     | 0       |
+|    sparsemux_15_3_32_1_1_U152          |     |        | tmp_s          | sparsemux | compactencoding_dontcare | 0       |
+|    sparsemux_15_3_32_1_1_U153          |     |        | tmp_1          | sparsemux | compactencoding_dontcare | 0       |
+|    sparsemux_15_3_32_1_1_U154          |     |        | tmp_2          | sparsemux | compactencoding_dontcare | 0       |
+|    sparsemux_15_3_32_1_1_U155          |     |        | tmp_3          | sparsemux | compactencoding_dontcare | 0       |
+|    sparsemux_15_3_32_1_1_U156          |     |        | tmp_4          | sparsemux | compactencoding_dontcare | 0       |
+|    sparsemux_15_3_32_1_1_U157          |     |        | tmp_5          | sparsemux | compactencoding_dontcare | 0       |
+|    sparsemux_15_3_32_1_1_U158          |     |        | tmp_6          | sparsemux | compactencoding_dontcare | 0       |
+|    sparsemux_15_3_32_1_1_U159          |     |        | tmp_7          | sparsemux | compactencoding_dontcare | 0       |
+|    sparsemux_17_3_32_1_1_U160          |     |        | akp            | sparsemux | compactencoding_dontcare | 0       |
+|    sparsemux_15_3_32_1_1_U161          |     |        | tmp_8          | sparsemux | compactencoding_dontcare | 0       |
+|    sparsemux_15_3_32_1_1_U162          |     |        | tmp_9          | sparsemux | compactencoding_dontcare | 0       |
+|    sparsemux_15_3_32_1_1_U163          |     |        | tmp_10         | sparsemux | compactencoding_dontcare | 0       |
+|    sparsemux_15_3_32_1_1_U164          |     |        | tmp_11         | sparsemux | compactencoding_dontcare | 0       |
+|    sparsemux_15_3_32_1_1_U165          |     |        | tmp_12         | sparsemux | compactencoding_dontcare | 0       |
+|    sparsemux_15_3_32_1_1_U166          |     |        | tmp_13         | sparsemux | compactencoding_dontcare | 0       |
+|    sparsemux_15_3_32_1_1_U167          |     |        | tmp_14         | sparsemux | compactencoding_dontcare | 0       |
+|    sparsemux_15_3_32_1_1_U168          |     |        | tmp_15         | sparsemux | compactencoding_dontcare | 0       |
+|    sparsemux_17_3_32_1_1_U169          |     |        | akq            | sparsemux | compactencoding_dontcare | 0       |
+|    mul_32s_32s_62_2_1_U145             | 4   |        | mul_ln146_1    | mul       | auto                     | 1       |
+|    mul_32s_32s_62_2_1_U146             | 4   |        | mul_ln147      | mul       | auto                     | 1       |
+|    mul_32s_32s_62_2_1_U147             | 4   |        | mul_ln147_1    | mul       | auto                     | 1       |
+|    sparsemux_15_3_32_1_1_U170          |     |        | tmp_16         | sparsemux | compactencoding_dontcare | 0       |
+|    sparsemux_15_3_32_1_1_U171          |     |        | tmp_17         | sparsemux | compactencoding_dontcare | 0       |
+|    sparsemux_15_3_32_1_1_U172          |     |        | tmp_18         | sparsemux | compactencoding_dontcare | 0       |
+|    sparsemux_15_3_32_1_1_U173          |     |        | tmp_19         | sparsemux | compactencoding_dontcare | 0       |
+|    sparsemux_15_3_32_1_1_U174          |     |        | tmp_20         | sparsemux | compactencoding_dontcare | 0       |
+|    sparsemux_15_3_32_1_1_U175          |     |        | tmp_21         | sparsemux | compactencoding_dontcare | 0       |
+|    sparsemux_15_3_32_1_1_U176          |     |        | tmp_22         | sparsemux | compactencoding_dontcare | 0       |
+|    sparsemux_15_3_32_1_1_U177          |     |        | tmp_23         | sparsemux | compactencoding_dontcare | 0       |
+|    sparsemux_17_3_32_1_1_U178          |     |        | vkp            | sparsemux | compactencoding_dontcare | 0       |
+|    sparsemux_15_3_32_1_1_U179          |     |        | tmp_24         | sparsemux | compactencoding_dontcare | 0       |
+|    sparsemux_15_3_32_1_1_U180          |     |        | tmp_25         | sparsemux | compactencoding_dontcare | 0       |
+|    sparsemux_15_3_32_1_1_U181          |     |        | tmp_26         | sparsemux | compactencoding_dontcare | 0       |
+|    sparsemux_15_3_32_1_1_U182          |     |        | tmp_27         | sparsemux | compactencoding_dontcare | 0       |
+|    sparsemux_15_3_32_1_1_U183          |     |        | tmp_28         | sparsemux | compactencoding_dontcare | 0       |
+|    sparsemux_15_3_32_1_1_U184          |     |        | tmp_29         | sparsemux | compactencoding_dontcare | 0       |
+|    sparsemux_15_3_32_1_1_U185          |     |        | tmp_30         | sparsemux | compactencoding_dontcare | 0       |
+|    sparsemux_15_3_32_1_1_U186          |     |        | tmp_31         | sparsemux | compactencoding_dontcare | 0       |
+|    sparsemux_17_3_32_1_1_U187          |     |        | vkq            | sparsemux | compactencoding_dontcare | 0       |
+|    mul_32s_32s_62_2_1_U148             | 4   |        | mul_ln154      | mul       | auto                     | 1       |
+|    mul_32s_32s_62_2_1_U149             | 4   |        | mul_ln154_1    | mul       | auto                     | 1       |
+|    mul_32s_32s_62_2_1_U150             | 4   |        | mul_ln155      | mul       | auto                     | 1       |
+|    mul_32s_32s_62_2_1_U151             | 4   |        | mul_ln155_1    | mul       | auto                     | 1       |
++----------------------------------------+-----+--------+----------------+-----------+--------------------------+---------+
+
+
+================================================================
+== Storage Report
+================================================================
++----------------------------------------+-----------+-----------+------+------+--------+------------+------+---------+------------------+
+| Name                                   | Usage     | Type      | BRAM | URAM | Pragma | Variable   | Impl | Latency | Bitwidth, Depth, |
+|                                        |           |           |      |      |        |            |      |         | Banks            |
++----------------------------------------+-----------+-----------+------+------+--------+------------+------+---------+------------------+
+| + jacobi_evd                           |           |           | 0    | 0    |        |            |      |         |                  |
+|   control_s_axi_U                      | interface | s_axilite |      |      |        |            |      |         |                  |
+|   PAIR_P_U                             | rom_1p    |           |      |      |        | PAIR_P     | auto | 1       | 3, 28, 1         |
+|   PAIR_Q_U                             | rom_1p    |           |      |      |        | PAIR_Q     | auto | 1       | 3, 28, 1         |
+|   ATAN_TABLE_U                         | rom_1p    |           |      |      |        | ATAN_TABLE | auto | 1       | 28, 24, 1        |
+|  + cordic_vectoring                    |           |           | 0    | 0    |        |            |      |         |                  |
+|   + cordic_vectoring_Pipeline_Vec_Loop |           |           | 0    | 0    |        |            |      |         |                  |
+|     ATAN_TABLE_U                       | rom_1p    |           |      |      |        | ATAN_TABLE | auto | 1       | 28, 24, 1        |
++----------------------------------------+-----------+-----------+------+------+--------+------------+------+---------+------------------+
+
+
+================================================================
+== Pragma Report
+================================================================
+* Inferred Pragmas
++--------------+---------+--------------------------------------------------------------------------+-----------------------------+
+| Type         | Options | Location                                                                 | Inferred From               |
++--------------+---------+--------------------------------------------------------------------------+-----------------------------+
+| LOOP_FLATTEN | off     | loop Pair_Loop (jacobi_evd.cpp:120:9) in jacobi_evd (jacobi_evd.cpp:120) | pipeline jacobi_evd.cpp:141 |
++--------------+---------+--------------------------------------------------------------------------+-----------------------------+
+
+* Valid Pragma Syntax
++-----------------+-------------------------------------------+-----------------------------------------+
+| Type            | Options                                   | Location                                |
++-----------------+-------------------------------------------+-----------------------------------------+
+| INLINE          |                                           | in rnd30 (jacobi_evd.cpp:31)            |
+| INLINE          | off                                       | in cordic_vectoring (jacobi_evd.cpp:37) |
+| UNROLL          |                                           | in cordic_vectoring (jacobi_evd.cpp:46) |
+| PIPELINE        | ii=1                                      | in cordic_vectoring (jacobi_evd.cpp:60) |
+| INLINE          | off                                       | in cordic_rotation (jacobi_evd.cpp:77)  |
+| PIPELINE        | ii=1                                      | in cordic_rotation (jacobi_evd.cpp:82)  |
+| INTERFACE       | mode=axis port=r_in                       | in jacobi_evd (jacobi_evd.cpp:99)       |
+| INTERFACE       | mode=axis port=e_out                      | in jacobi_evd (jacobi_evd.cpp:100)      |
+| INTERFACE       | mode=s_axilite port=return bundle=control | in jacobi_evd (jacobi_evd.cpp:101)      |
+| ARRAY_PARTITION | variable=A type=complete dim=0            | in jacobi_evd (jacobi_evd.cpp:105)      |
+| ARRAY_PARTITION | variable=V type=complete dim=0            | in jacobi_evd (jacobi_evd.cpp:106)      |
+| PIPELINE        | ii=1                                      | in jacobi_evd (jacobi_evd.cpp:111)      |
+| PIPELINE        | ii=1                                      | in jacobi_evd (jacobi_evd.cpp:141)      |
+| DEPENDENCE      | variable=A type=inter false               | in jacobi_evd (jacobi_evd.cpp:142)      |
+| DEPENDENCE      | variable=V type=inter false               | in jacobi_evd (jacobi_evd.cpp:143)      |
+| PIPELINE        | ii=1                                      | in jacobi_evd (jacobi_evd.cpp:169)      |
++-----------------+-------------------------------------------+-----------------------------------------+
+
+

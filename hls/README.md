@@ -3,7 +3,7 @@
 | Kernel | Folder | Status |
 |---|---|---|
 | Unitary transform + real SCM | `scm/` | Vitis 2025.2: csim PASS, synthesis, cosim PASS (bit-exact), IP exported |
-| Jacobi EVD (PCA) | `jacobi/` | g++ csim PASS (bit-exact, 14 frames); Vitis synthesis/cosim pending |
+| Jacobi EVD (PCA) | `jacobi/` | Vitis 2025.2: csim PASS, synthesis, cosim PASS (bit-exact), IP exported; on board bit-exact |
 | MUSIC denominator + peaks | `music/` | Not started |
 | Top-level IP | `top/` | Not started |
 
@@ -76,6 +76,18 @@ No square root and no division; the only multipliers are in the A and V updates.
 | Formats | A `ap_fixed<32,7>` (\|a\| <= 32), V, c, s `ap_fixed<32,2>`, angle 28 fractional bits, CORDIC registers 34 bits |
 | Rounding | every product rounded once (AP_RND, `(x + 2^29) >> 30`); diagonal from c^2, s^2, cs |
 | Accuracy (model) | max \|eig - eigh\| = 4.4e-6 (2.8e-7 of lambda_max), \|V^T V - I\| < 3e-7 |
+
+### Vitis HLS 2025.2 results (`jacobi/reports/`)
+
+| Metric | Value |
+|---|---|
+| Latency, synthesis | 6,649 - 10,121 cycles (66.5 - 101.2 us) |
+| Latency, co-simulation | min 6,199 / avg 9,061 / max 9,447 cycles, PASS bit-exact (14 frames) |
+| Estimated clock | 9.609 ns (target 10 ns) |
+| DSP / LUT / FF / BRAM | 48 / 13,209 / 11,189 / 0 |
+
+Per rotation: CORDIC vectoring up to 33 cycles, rotation 26, update loop 16 (II = 1), 58 - 89
+cycles in total; 112 rotations.
 
 Verification: `python/jacobi_bitexact.py` (bit-true model), `python/gen_jacobi_vectors.py`
 (14 frames: the R matrices of the 10 SCM test frames, so Tier 1 -> Tier 2 is covered end to end,
