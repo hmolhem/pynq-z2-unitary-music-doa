@@ -51,7 +51,7 @@ estimator resolve coherent sources.
 | `vivado/` | Tcl scripts that rebuild the block design from scratch (no generated project files) |
 | `pynq/` | Overlay driver and Jupyter notebooks for the board |
 | `results/` | Measured data and figures |
-| `docs/` | Interface specification and design decisions |
+| `docs/` | Design decisions, [design flow guide](docs/design_flow.md) (Python -> HLS -> Vivado -> board), [board guide](docs/board_bringup.md) |
 
 Bitstreams (`.bit` / `.hwh`) are published under GitHub Releases, not committed.
 
