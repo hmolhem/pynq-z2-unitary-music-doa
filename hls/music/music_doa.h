@@ -40,9 +40,12 @@ typedef ap_axiu<32, 0, 0, 0> axis_t;
 
 // Top-level IP.
 //   e_in : AXI4-Stream, 72 words from jacobi_evd; TLAST ignored
-//   d_out: AXI4-Stream, 183 words: 2 angles, then the MUSIC denominator;
-//          TLAST on the last word
-//   control: AXI4-Lite (ap_start / ap_done)
-void music_doa(hls::stream<mus::axis_t> &e_in, hls::stream<mus::axis_t> &d_out);
+//   d_out: AXI4-Stream, 183 words per frame: 2 angles, then the MUSIC
+//          denominator. TLAST on the last word of every batch-th frame, so
+//          several frames can be collected by one DMA transfer.
+//   batch: AXI4-Lite register, frames per output packet (0 or 1 = every frame)
+//   control: AXI4-Lite (ap_start / ap_done / auto_restart)
+void music_doa(hls::stream<mus::axis_t> &e_in, hls::stream<mus::axis_t> &d_out,
+               ap_uint<16> batch);
 
 #endif  // MUSIC_DOA_H

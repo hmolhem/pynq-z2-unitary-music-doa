@@ -112,7 +112,8 @@ angle  = (g - 90) + (d[g-1] - d[g+1]) / (2 (d[g-1] - 2 d[g] + d[g+1]))   one div
 | Item | Value |
 |---|---|
 | Input | AXI4-Stream `e_in`, 72 words (the `jacobi_evd` output) |
-| Output | AXI4-Stream `d_out`, 183 words: 2 angles (raw Q16.16 degrees, ascending), then d(0..180) (raw Q5.27); TLAST on word 182 |
+| Output | AXI4-Stream `d_out`, 183 words per frame: 2 angles (raw Q16.16 degrees, ascending), then d(0..180) (raw Q5.27) |
+| Batching | AXI-Lite register `batch`: TLAST only on the last word of every `batch`-th frame (0 or 1 = every frame), so with auto-restart one DMA transfer carries many frames |
 | Formats | ROM `ap_fixed<25,2>`, projection Q3.29 (one rounding), d Q5.27 (one rounding) |
 | Schedule | grid loop II = 1 with the 8 ROM banks read in parallel (16 products per angle), then a 181-cycle peak search |
 
@@ -127,6 +128,15 @@ the testbench.
 End to end (`python/sweep_tier3_chain.py`, 200 trials per point): the whole estimator in fixed
 point has the same RMSE and resolution probability as floating point at every SNR from -10 to
 20 dB, uncorrelated and coherent (`python/results/tier3_chain_vs_float.csv`).
+
+## Design-space variants (`dse/`, synthesis only)
+
+| Variant | Change | Question |
+|---|---|---|
+| `dse/scm_mul9` | `ALLOCATION mul limit=9` in the SCM snapshot loop | Can the 72 DSPs be shared over the II = 8 interval? |
+| `dse/jac_cordic16`, `dse/jac_cordic20` | 16 / 20 instead of 24 CORDIC iterations | Latency and resources vs accuracy (`python/dse_cordic.py`) |
+
+Run all three: `powershell -ExecutionPolicy Bypass -File run_dse.ps1`.
 
 ## Running
 

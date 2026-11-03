@@ -9,6 +9,8 @@
 //   * Peak search over the stored d(g): track the 2 deepest strict local
 //     minima and the 2 smallest values overall (fallback).
 //   * Parabolic refinement: one integer division per peak.
+//   * Batching: with auto-restart, TLAST is set only on every batch-th
+//     frame, so one DMA transfer can collect many frames.
 // =====================================================================
 #include "music_doa.h"
 #include "music_rom.h"
@@ -50,10 +52,17 @@ static ang_t refine(const d_t D[G], ap_uint<8> g) {
     return (ang_t)(((ap_int<40>)((int)g - GRID_OFFSET) << ANG_FRAC) + delta);
 }
 
-void music_doa(hls::stream<axis_t> &e_in, hls::stream<axis_t> &d_out) {
+void music_doa(hls::stream<axis_t> &e_in, hls::stream<axis_t> &d_out, ap_uint<16> batch) {
 #pragma HLS INTERFACE mode=axis port=e_in
 #pragma HLS INTERFACE mode=axis port=d_out
+#pragma HLS INTERFACE mode=s_axilite port=batch bundle=control
 #pragma HLS INTERFACE mode=s_axilite port=return bundle=control
+
+    // Frame counter for batched output packets (kept across calls)
+    static ap_uint<16> frame_cnt = 0;
+    const ap_uint<16> nb = (batch == 0) ? (ap_uint<16>)1 : batch;
+    const bool last_frame = (ap_uint<17>)(frame_cnt + 1) >= nb;
+    frame_cnt = last_frame ? (ap_uint<16>)0 : (ap_uint<16>)(frame_cnt + 1);
 #pragma HLS ARRAY_PARTITION variable=B_ROM type=complete dim=1
 
     lam_t lam[N];
@@ -147,7 +156,7 @@ Out_Loop:
         beat.data = (i < K) ? (ap_uint<32>)a : (ap_uint<32>)D[i - K];
         beat.keep = -1;
         beat.strb = -1;
-        beat.last = (i == N_OUT - 1);
+        beat.last = last_frame && (i == N_OUT - 1);
         d_out.write(beat);
     }
 }

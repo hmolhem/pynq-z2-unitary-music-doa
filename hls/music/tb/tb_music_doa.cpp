@@ -27,7 +27,7 @@ int main() {
             e_in.write(beat);
         }
 
-        music_doa(e_in, d_out);
+        music_doa(e_in, d_out, 1);
 
         int err = 0;
         double ang[K] = {0, 0};
@@ -57,6 +57,33 @@ int main() {
         }
         std::printf("frame %2d: %s (DOA = %9.4f, %9.4f deg)\n", f, err ? "FAIL" : "pass",
                     ang[0], ang[1]);
+        total_err += err;
+    }
+
+    // Batched packets: 3 frames with batch = 3 -> TLAST only on the very last
+    // word, data identical to the single-frame results
+    {
+        const int B = 3;
+        int err = 0;
+        for (int f = 0; f < B; f++) {
+            hls::stream<axis_t> e_in("e_in_b"), d_out("d_out_b");
+            for (int i = 0; i < N_IN; i++) {
+                axis_t beat;
+                beat.data = (ap_uint<32>)(uint32_t)MUS_TV_IN[f][i];
+                beat.keep = -1;
+                beat.strb = -1;
+                beat.last = (i == N_IN - 1);
+                e_in.write(beat);
+            }
+            music_doa(e_in, d_out, B);
+            for (int j = 0; j < N_OUT; j++) {
+                axis_t beat = d_out.read();
+                if ((int32_t)(uint32_t)beat.data.to_uint() != MUS_TV_OUT[f][j]) err++;
+                const int want_last = (f == B - 1 && j == N_OUT - 1) ? 1 : 0;
+                if ((int)beat.last != want_last) err++;
+            }
+        }
+        std::printf("batch of %d frames: %s\n", B, err ? "FAIL" : "pass");
         total_err += err;
     }
 

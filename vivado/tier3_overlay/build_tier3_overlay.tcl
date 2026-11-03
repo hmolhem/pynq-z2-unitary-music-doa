@@ -6,6 +6,12 @@
 #                                                              2 angles + MUSIC denominator
 #   All three kernels are started through their AXI-Lite control registers on GP0.
 #
+#   Cycle counter: an AXI Timer (axi_timer_0) runs both counters freely at
+#   100 MHz and captures them on the DMA interrupt outputs:
+#     counter 0 <- mm2s_introut (all input words accepted by scm_unitary)
+#     counter 1 <- s2mm_introut (last output word written to DDR)
+#   so the PL latency is measured on the board in clock cycles.
+#
 # Prerequisite: the three HLS IPs are exported first:
 #     powershell -ExecutionPolicy Bypass -File hls/run_hls.ps1 -Kernel scm
 #     powershell -ExecutionPolicy Bypass -File hls/run_hls.ps1 -Kernel jacobi
@@ -135,6 +141,9 @@ set mus_def [lindex [get_ipdefs -all -filter {NAME == music_doa}] end]
 if {$mus_def eq ""} { error "music_doa not in the IP catalog (check $ip_repos)" }
 set mus [create_bd_cell -type ip -vlnv $mus_def music_doa_0]
 
+# AXI Timer used as a cycle counter (two 32-bit counters, capture mode)
+set tmr [create_bd_cell -type ip -vlnv [ip_vlnv axi_timer] axi_timer_0]
+
 # AXI connections through the connection automation
 apply_bd_automation -rule xilinx.com:bd_rule:axi4 -config { \
     Clk_master {Auto} Clk_slave {Auto} Clk_xbar {Auto} \
@@ -158,6 +167,11 @@ apply_bd_automation -rule xilinx.com:bd_rule:axi4 -config { \
     [get_bd_intf_pins music_doa_0/s_axi_control]
 apply_bd_automation -rule xilinx.com:bd_rule:axi4 -config { \
     Clk_master {Auto} Clk_slave {Auto} Clk_xbar {Auto} \
+    Master {/processing_system7_0/M_AXI_GP0} Slave {/axi_timer_0/S_AXI} \
+    ddr_seg {Auto} intc_ip {Auto} master_apm {0}} \
+    [get_bd_intf_pins axi_timer_0/S_AXI]
+apply_bd_automation -rule xilinx.com:bd_rule:axi4 -config { \
+    Clk_master {Auto} Clk_slave {Auto} Clk_xbar {Auto} \
     Master {/axi_dma_0/M_AXI_MM2S} Slave {/processing_system7_0/S_AXI_HP0} \
     ddr_seg {Auto} intc_ip {New AXI SmartConnect} master_apm {0}} \
     [get_bd_intf_pins processing_system7_0/S_AXI_HP0]
@@ -172,6 +186,10 @@ connect_bd_intf_net [get_bd_intf_pins axi_dma_0/M_AXIS_MM2S] [get_bd_intf_pins s
 connect_bd_intf_net [get_bd_intf_pins scm_unitary_0/r_out] [get_bd_intf_pins jacobi_evd_0/r_in]
 connect_bd_intf_net [get_bd_intf_pins jacobi_evd_0/e_out] [get_bd_intf_pins music_doa_0/e_in]
 connect_bd_intf_net [get_bd_intf_pins music_doa_0/d_out] [get_bd_intf_pins axi_dma_0/S_AXIS_S2MM]
+
+# Cycle counter captures: end of the input transfer and end of the output transfer
+connect_bd_net [get_bd_pins axi_dma_0/mm2s_introut] [get_bd_pins axi_timer_0/capturetrig0]
+connect_bd_net [get_bd_pins axi_dma_0/s2mm_introut] [get_bd_pins axi_timer_0/capturetrig1]
 
 # Clock and reset of the kernel (normally done by the AXI-Lite automation)
 set rst [lindex [get_bd_cells -filter {VLNV =~ *proc_sys_reset*}] 0]
