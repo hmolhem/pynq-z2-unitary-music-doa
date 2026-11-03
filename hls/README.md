@@ -4,7 +4,7 @@
 |---|---|---|
 | Unitary transform + real SCM | `scm/` | Vitis 2025.2: csim PASS, synthesis, cosim PASS (bit-exact), IP exported |
 | Jacobi EVD (PCA) | `jacobi/` | Vitis 2025.2: csim PASS, synthesis, cosim PASS (bit-exact), IP exported; on board bit-exact |
-| MUSIC denominator + peaks | `music/` | Not started |
+| MUSIC denominator + peaks | `music/` | g++ csim PASS (bit-exact, 25 frames); Vitis run pending |
 | Top-level IP | `top/` | Not started |
 
 ## `scm/` -- unitary transform + real-valued SCM
@@ -99,6 +99,45 @@ bit-exact chain (fixed-point SCM + Jacobi, MUSIC in float) has the same RMSE and
 the floating-point chain at every SNR from -10 to 20 dB, uncorrelated and coherent
 (`python/results/tier2_chain_vs_float.csv`).
 
+## `music/` -- real MUSIC spectrum and peak search (Tier 3)
+
+```text
+E_s    = eigenvectors of the 2 largest eigenvalues (strict >, lower index wins ties)
+p_k(g) = e_k^T b(g)                 b(g) = Q^H a(theta_g) from an 8 x 181 ROM (music_rom.h)
+d(g)   = 8 - p_1(g)^2 - p_2(g)^2     ||b(g)||^2 = N = 8 exactly
+peaks  = 2 deepest strict local minima (d[g] < d[g-1], d[g] <= d[g+1]); smallest d as fallback
+angle  = (g - 90) + (d[g-1] - d[g+1]) / (2 (d[g-1] - 2 d[g] + d[g+1]))   one division per peak
+```
+
+| Item | Value |
+|---|---|
+| Input | AXI4-Stream `e_in`, 72 words (the `jacobi_evd` output) |
+| Output | AXI4-Stream `d_out`, 183 words per frame: 2 angles (raw Q16.16 degrees, ascending), then d(0..180) (raw Q5.27) |
+| Batching | AXI-Lite register `batch`: TLAST only on the last word of every `batch`-th frame (0 or 1 = every frame), so with auto-restart one DMA transfer carries many frames |
+| Formats | ROM `ap_fixed<25,2>`, projection Q3.29 (one rounding), d Q5.27 (one rounding) |
+| Schedule | grid loop II = 1 with the 8 ROM banks read in parallel (16 products per angle), then a 181-cycle peak search |
+
+Verification: `python/music_bitexact.py`, `python/gen_music_vectors.py` (25 frames: the Jacobi
+outputs of the 14 Jacobi test matrices, realistic frames including endfire, single, close and
+coherent sources and pure noise, and four crafted inputs for the peak-search corner cases:
+no local minimum, one local minimum, a minimum on a plateau of equal values, and one minimum
+with the global minimum at the grid edge). Six mutations (projection and denominator rounding,
+`<=` vs `<` in the minimum test, fallback order, eigenvalue tie rule, output order) all fail
+the testbench.
+
+End to end (`python/sweep_tier3_chain.py`, 200 trials per point): the whole estimator in fixed
+point has the same RMSE and resolution probability as floating point at every SNR from -10 to
+20 dB, uncorrelated and coherent (`python/results/tier3_chain_vs_float.csv`).
+
+## Design-space variants (`dse/`, synthesis only)
+
+| Variant | Change | Question |
+|---|---|---|
+| `dse/scm_mul9` | `ALLOCATION mul limit=9` in the SCM snapshot loop | Can the 72 DSPs be shared over the II = 8 interval? |
+| `dse/jac_cordic16`, `dse/jac_cordic20` | 16 / 20 instead of 24 CORDIC iterations | Latency and resources vs accuracy (`python/dse_cordic.py`) |
+
+Run all three: `powershell -ExecutionPolicy Bypass -File run_dse.ps1`.
+
 ## Running
 
 **Without Vitis (g++):**
@@ -117,6 +156,7 @@ make csim AP_INCLUDE=path/to/HLS_arbitrary_Precision_Types/include   # both kern
 cd C:\MyDocument\pynq-z2-unitary-music-doa\hls
 powershell -ExecutionPolicy Bypass -File run_hls.ps1 -Kernel scm
 powershell -ExecutionPolicy Bypass -File run_hls.ps1 -Kernel jacobi
+powershell -ExecutionPolicy Bypass -File run_hls.ps1 -Kernel music
 ```
 
 Runs C simulation, C synthesis, co-simulation and IP export in `scm/work/`, and copies the

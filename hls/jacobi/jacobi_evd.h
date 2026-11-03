@@ -22,7 +22,10 @@ constexpr int N = 8;
 constexpr int N_PAIRS = N * (N - 1) / 2;   // 28 rotations per sweep
 constexpr int N_SWEEPS = 4;
 constexpr int N_OUT = N + N * N;           // eigenvalues, then V row-major
-constexpr int N_CORDIC = 24;
+#ifndef JAC_N_CORDIC
+#define JAC_N_CORDIC 24      // design-space variants override this (synthesis only)
+#endif
+constexpr int N_CORDIC = JAC_N_CORDIC;
 constexpr int NORM_BITS = 30;
 
 // All values are raw two's-complement integers with a fixed binary point

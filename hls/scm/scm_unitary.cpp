@@ -44,6 +44,10 @@ Init_Loop:
 Snapshot_Loop:
     for (int m = 0; m < M; m++) {
 #pragma HLS PIPELINE II=8
+#ifdef SCM_SHARED_MUL
+        // Design-space variant: share 9 multipliers over the 8-cycle interval
+#pragma HLS ALLOCATION operation instances=mul limit=9
+#endif
         in_t xr[N], xi[N];
 #pragma HLS ARRAY_PARTITION variable=xr type=complete
 #pragma HLS ARRAY_PARTITION variable=xi type=complete

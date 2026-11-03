@@ -23,11 +23,15 @@ Bit-true models (must match the HLS output bit for bit):
 | `gen_jacobi_vectors.py` | Writes the `hls/jacobi/tb` test vectors, reports accuracy against `eigh` |
 | `chain_bitexact.py` | Tier 2 chain: bit-exact SCM + Jacobi, MUSIC in float (what the board returns) |
 | `sweep_tier2_chain.py` | Monte Carlo: Tier 2 chain vs float -> `results/tier2_chain_vs_float.csv` |
+| `music_bitexact.py` | Integer-exact model of `hls/music` (steering ROM, MUSIC denominator, peak search) |
+| `gen_music_vectors.py` | Writes `hls/music/music_rom.h` and the `hls/music/tb` test vectors |
+| `sweep_tier3_chain.py` | Monte Carlo: whole estimator in fixed point vs float -> `results/tier3_chain_vs_float.csv` |
+| `dse_cordic.py` | CORDIC iterations (12-24) vs eigenvalue error and DOA accuracy -> `results/dse_cordic.csv` |
 
 ## Run
 
 ```bash
-python -m pytest -q          # 14 tests
+python -m pytest -q          # 17 tests
 python sweep_rmse.py 200     # Monte Carlo sweep -> results/
 ```
 
