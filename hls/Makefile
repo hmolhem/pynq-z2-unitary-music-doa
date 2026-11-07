@@ -2,7 +2,8 @@
 #
 #   make csim-scm        build and run the bit-exact SCM testbench
 #   make csim-jacobi     build and run the bit-exact Jacobi EVD testbench
-#   make csim            both
+#   make csim-music      build and run the bit-exact MUSIC + peak-search testbench
+#   make csim            all kernels
 #
 # Needs the open-source arbitrary-precision headers:
 #   git clone https://github.com/Xilinx/HLS_arbitrary_Precision_Types
@@ -16,7 +17,7 @@ CXXFLAGS   ?= -std=c++14 -O2 -Wall -Wno-unused-label -Wno-unknown-pragmas \
 INCLUDES    = -isystem $(AP_INCLUDE) -Icommon/sim_shim
 BUILD       = build
 
-.PHONY: csim csim-scm csim-jacobi clean
+.PHONY: csim csim-scm csim-jacobi csim-music clean
 
 $(BUILD):
 	mkdir -p $(BUILD)
@@ -33,7 +34,13 @@ $(BUILD)/tb_jacobi: jacobi/jacobi_evd.cpp jacobi/tb/tb_jacobi_evd.cpp jacobi/jac
 csim-jacobi: $(BUILD)/tb_jacobi
 	./$(BUILD)/tb_jacobi
 
-csim: csim-scm csim-jacobi
+$(BUILD)/tb_music: music/music_doa.cpp music/tb/tb_music_doa.cpp music/music_doa.h music/music_rom.h music/tb/music_vectors.h | $(BUILD)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) music/music_doa.cpp music/tb/tb_music_doa.cpp -o $@
+
+csim-music: $(BUILD)/tb_music
+	./$(BUILD)/tb_music
+
+csim: csim-scm csim-jacobi csim-music
 
 clean:
 	rm -rf $(BUILD)

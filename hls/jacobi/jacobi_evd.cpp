@@ -13,7 +13,7 @@
 using namespace jac;
 
 // atan(2^-i) with 28 fractional bits
-static const ang_t ATAN_TABLE[N_CORDIC] = {
+static const ang_t ATAN_TABLE[24] = {   // first N_CORDIC entries are used
     210828714, 124459457, 65760959, 33381290, 16755422, 8385879,
     4193963,   2097109,   1048571,  524287,   262144,   131072,
     65536,     32768,     16384,    8192,     4096,     2048,

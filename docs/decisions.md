@@ -19,3 +19,10 @@
 | 2026-10-18 | Symmetric update (only k != p, q in the loop; a_pp, a_qq from c^2, s^2, cs; a_pq := 0) | Exact symmetry, fewer multiplies, same as the classical two-sided rotation |
 | 2026-10-18 | Jacobi outputs unsorted eigenvalues and the full V | Sorting and subspace selection stay on the ARM in Tier 2; Tier 3 moves them into the PL |
 | 2026-10-18 | Tier 2 overlay chains scm_unitary -> jacobi_evd by AXI-Stream, one DMA | One call per frame; R never leaves the PL |
+| 2026-10-31 | MUSIC kernel uses d = 8 - sum p_k^2 with ||b||^2 = N = 8 as a constant | Unit-modulus steering vector; no ROM column norms needed |
+| 2026-10-31 | Steering ROM in `ap_fixed<25,2>` (Q2.22), generated from Python into `music_rom.h` | One table shared by C and Python; 25 bits fit one DSP input |
+| 2026-10-31 | K = 2 fixed at compile time; output = 2 angles (Q16.16 deg) + full d(theta) | Frozen configuration; the spectrum is kept for plots and verification |
+| 2026-10-31 | Parabolic refinement with one integer division per peak, truncated toward zero | Exact and reproducible in the integer model |
+| 2026-11-03 | Batching through a `batch` register in `music_doa` (TLAST every batch-th frame) and kernel auto-restart | Throughput with one DMA transfer for many frames, no scatter-gather DMA needed |
+| 2026-11-03 | AXI Timer captures on the DMA `mm2s_introut` / `s2mm_introut` | PL latency measured on the board in clock cycles, independent of Python |
+

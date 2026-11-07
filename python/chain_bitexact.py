@@ -29,3 +29,14 @@ def tier2_doa(x: np.ndarray, array: MimoArray, k: int, grid_deg: np.ndarray,
     b = real_steering_table(array, grid_deg) if b_table is None else b_table
     denom = music_spectrum_signal_subspace(vec[:, :k], b)
     return find_peaks(denom, grid_deg, k, refine)
+
+
+def tier3_doa(x: np.ndarray):
+    """Tier 3: the whole estimator bit-exact (SCM, Jacobi, MUSIC, peak search)."""
+    from music_bitexact import angles_deg, music_raw
+
+    xs, _ = normalize_frame(x)
+    xr, xi = quantize_input(xs)
+    d_eig, v = jacobi_raw(scm_unitary_raw(xr, xi))
+    angles, _ = music_raw(d_eig, v)
+    return angles_deg(angles)

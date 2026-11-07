@@ -1,0 +1,326 @@
+
+
+================================================================
+== Synthesis Summary Report of 'music_doa'
+================================================================
++ General Information: 
+    * Date:           Sat Nov  7 11:49:24 2026
+    * Version:        2025.2 (Build 6295257 on Nov 14 2025)
+    * Project:        work
+    * Solution:       hls (Vivado IP Flow Target)
+    * Product family: zynq
+    * Target device:  xc7z020-clg400-1
+    
+
+* Performance & Resource Estimates: 
++---------------------------------+--------+---------------+----------+---------+------+----------+---------+-----------+-------+---------+----------+------------+------------+-----+
+|             Modules             |  Issue |               | Iteration|         | Trip |          |       Latency       |       |         |          |            |            |     |
+|             & Loops             |  Type  | Violation Type|  Latency | Interval| Count| Pipelined| (cycles)|    (ns)   | Slack |  BRAM   |    DSP   |     FF     |     LUT    | URAM|
++---------------------------------+--------+---------------+----------+---------+------+----------+---------+-----------+-------+---------+----------+------------+------------+-----+
+|+ music_doa                      |  Timing|              -|         -|      773|     -|        no|      772|  7.720e+03|  -0.10|  10 (3%)|  40 (18%)|  10561 (9%)|  6469 (12%)|    -|
+| + music_doa_Pipeline_Read_Loop  |       -|              -|         -|        -|     -|       yes|       74|    740.000|   2.24|        -|         -|   2324 (2%)|   104 (~0%)|    -|
+|  o Read_Loop                    |       -|              -|         2|        1|    72|       yes|       72|    720.000|   7.30|        -|         -|           -|           -|    -|
+| + music_doa_Pipeline_Grid_Loop  |       -|              -|         -|        -|     -|       yes|      193|  1.930e+03|   0.39|   8 (2%)|  40 (18%)|   5749 (5%)|   2104 (3%)|    -|
+|  o Grid_Loop                    |       -|              -|        12|        1|   181|       yes|      191|  1.910e+03|   7.30|        -|         -|           -|           -|    -|
+| + music_doa_Pipeline_Peak_Loop  |  Timing|              -|         -|        -|     -|       yes|      185|  1.850e+03|  -0.10|        -|         -|   421 (~0%)|    849 (1%)|    -|
+|  o Peak_Loop                    |       -|              -|         4|        1|   181|       yes|      183|  1.830e+03|   7.30|        -|         -|           -|           -|    -|
+| + refine                        |       -|              -|         -|       57|     -|        no|       57|    570.000|   0.20|        -|         -|   937 (~0%)|   1061 (1%)|    -|
+| + music_doa_Pipeline_Out_Loop   |       -|              -|         -|        -|     -|       yes|      185|  1.850e+03|   0.54|        -|         -|    14 (~0%)|   204 (~0%)|    -|
+|  o Out_Loop                     |       -|              -|         2|        1|   183|       yes|      183|  1.830e+03|   7.30|        -|         -|           -|           -|    -|
++---------------------------------+--------+---------------+----------+---------+------+----------+---------+-----------+-------+---------+----------+------------+------------+-----+
+    Name Prefix: '+' for module, 'o' for loop, '*' for dataflow
+
+
+================================================================
+== HW Interfaces
+================================================================
+* S_AXILITE Interfaces
++---------------+------------+---------------+--------+----------+
+| Interface     | Data Width | Address Width | Offset | Register |
++---------------+------------+---------------+--------+----------+
+| s_axi_control | 32         | 5             | 16     | 0        |
++---------------+------------+---------------+--------+----------+
+
+* S_AXILITE Registers
++---------------+----------+--------+-------+--------+----------------------------------+----------------------------------------------------------------------+
+| Interface     | Register | Offset | Width | Access | Description                      | Bit Fields                                                           |
++---------------+----------+--------+-------+--------+----------------------------------+----------------------------------------------------------------------+
+| s_axi_control | CTRL     | 0x00   | 32    | RW     | Control signals                  | 0=AP_START 1=AP_DONE 2=AP_IDLE 3=AP_READY 7=AUTO_RESTART 9=INTERRUPT |
+| s_axi_control | GIER     | 0x04   | 32    | RW     | Global Interrupt Enable Register | 0=Enable                                                             |
+| s_axi_control | IP_IER   | 0x08   | 32    | RW     | IP Interrupt Enable Register     | 0=CHAN0_INT_EN 1=CHAN1_INT_EN                                        |
+| s_axi_control | IP_ISR   | 0x0c   | 32    | RW     | IP Interrupt Status Register     | 0=CHAN0_INT_ST 1=CHAN1_INT_ST                                        |
+| s_axi_control | batch    | 0x10   | 32    | W      | Data signal of batch             |                                                                      |
++---------------+----------+--------+-------+--------+----------------------------------+----------------------------------------------------------------------+
+
+* AXIS
++-----------+-----------+---------------+-------+-------+-------+--------+-------+--------+
+| Interface | Direction | Register Mode | TDATA | TKEEP | TLAST | TREADY | TSTRB | TVALID |
++-----------+-----------+---------------+-------+-------+-------+--------+-------+--------+
+| d_out     | out       | both          | 32    | 4     | 1     | 1      | 4     | 1      |
+| e_in      | in        | both          | 32    | 4     | 1     | 1      | 4     | 1      |
++-----------+-----------+---------------+-------+-------+-------+--------+-------+--------+
+
+* TOP LEVEL CONTROL
++-----------+------------+-----------+
+| Interface | Type       | Ports     |
++-----------+------------+-----------+
+| ap_clk    | clock      | ap_clk    |
+| ap_rst_n  | reset      | ap_rst_n  |
+| interrupt | interrupt  | interrupt |
+| ap_ctrl   | ap_ctrl_hs |           |
++-----------+------------+-----------+
+
+
+================================================================
+== SW I/O Information
+================================================================
+* Top Function Arguments
++----------+-----------+------------------------------------------------------------------------------+
+| Argument | Direction | Datatype                                                                     |
++----------+-----------+------------------------------------------------------------------------------+
+| e_in     | in        | stream<hls::axis<ap_uint<32>, 0UL, 0UL, 0UL, (unsigned char)'8', false>, 0>& |
+| d_out    | out       | stream<hls::axis<ap_uint<32>, 0UL, 0UL, 0UL, (unsigned char)'8', false>, 0>& |
+| batch    | in        | ap_uint<16>                                                                  |
++----------+-----------+------------------------------------------------------------------------------+
+
+* SW-to-HW Mapping
++----------+---------------+-----------+---------------------------------+
+| Argument | HW Interface  | HW Type   | HW Info                         |
++----------+---------------+-----------+---------------------------------+
+| e_in     | e_in          | interface |                                 |
+| d_out    | d_out         | interface |                                 |
+| batch    | s_axi_control | register  | name=batch offset=0x10 range=32 |
++----------+---------------+-----------+---------------------------------+
+
+
+================================================================
+== Bind Op Report
+================================================================
++------------------------------------+-----+--------+----------------+-----------+--------------------------+---------+
+| Name                               | DSP | Pragma | Variable       | Op        | Impl                     | Latency |
++------------------------------------+-----+--------+----------------+-----------+--------------------------+---------+
+| + music_doa                        | 40  |        |                |           |                          |         |
+|   icmp_ln63_fu_2047_p2             |     |        | icmp_ln63      | seteq     | auto                     | 0       |
+|   nb_fu_2053_p3                    |     |        | nb             | select    | auto_sel                 | 0       |
+|   add_ln64_fu_2069_p2              |     |        | add_ln64       | add       | fabric                   | 0       |
+|   icmp_ln64_fu_2079_p2             |     |        | icmp_ln64      | setlt     | auto                     | 0       |
+|   last_frame_fu_2085_p2            |     |        | last_frame     | xor       | auto                     | 0       |
+|   add_ln65_fu_2092_p2              |     |        | add_ln65       | add       | fabric                   | 0       |
+|   select_ln65_fu_2098_p3           |     |        | select_ln65    | select    | auto_sel                 | 0       |
+|   i0_fu_633_p2                     |     |        | i0             | setgt     | auto                     | 0       |
+|   select_ln86_fu_643_p3            |     |        | select_ln86    | select    | auto_sel                 | 0       |
+|   icmp_ln86_fu_651_p2              |     |        | icmp_ln86      | setgt     | auto                     | 0       |
+|   select_ln89_6_fu_657_p3          |     |        | select_ln89_6  | select    | auto_sel                 | 0       |
+|   icmp_ln89_fu_665_p2              |     |        | icmp_ln89      | setgt     | auto                     | 0       |
+|   select_ln89_7_fu_671_p3          |     |        | select_ln89_7  | select    | auto_sel                 | 0       |
+|   or_ln89_fu_679_p2                |     |        | or_ln89        | or        | auto                     | 0       |
+|   select_ln89_fu_685_p3            |     |        | select_ln89    | select    | auto_sel                 | 0       |
+|   i1_fu_693_p3                     |     |        | i1             | select    | auto_sel                 | 0       |
+|   i0_1_fu_701_p3                   |     |        | i0_1           | select    | auto_sel                 | 0       |
+|   sparsemux_7_2_32_1_1_x_U149      |     |        | tmp_2          | sparsemux | onehotencoding_realdef   | 0       |
+|   icmp_ln86_1_fu_728_p2            |     |        | icmp_ln86_1    | setgt     | auto                     | 0       |
+|   sparsemux_7_2_32_1_1_x_U150      |     |        | tmp_3          | sparsemux | onehotencoding_realdef   | 0       |
+|   icmp_ln89_1_fu_750_p2            |     |        | icmp_ln89_1    | setgt     | auto                     | 0       |
+|   select_ln89_1_fu_756_p3          |     |        | select_ln89_1  | select    | auto_sel                 | 0       |
+|   tmp_5_fu_798_p10                 |     |        | i1_1           | select    | auto_sel                 | 0       |
+|   tmp_4_fu_777_p10                 |     |        | i0_2           | select    | auto_sel                 | 0       |
+|   sparsemux_9_2_32_1_1_U151        |     |        | tmp_4          | sparsemux | compactencoding_dontcare | 0       |
+|   icmp_ln86_2_fu_828_p2            |     |        | icmp_ln86_2    | setgt     | auto                     | 0       |
+|   sparsemux_9_2_32_1_1_U152        |     |        | tmp_5          | sparsemux | compactencoding_dontcare | 0       |
+|   icmp_ln89_2_fu_833_p2            |     |        | icmp_ln89_2    | setgt     | auto                     | 0       |
+|   select_ln89_2_fu_838_p3          |     |        | select_ln89_2  | select    | auto_sel                 | 0       |
+|   tmp_7_fu_886_p12                 |     |        | i1_2           | select    | auto_sel                 | 0       |
+|   tmp_6_fu_862_p12                 |     |        | i0_3           | select    | auto_sel                 | 0       |
+|   sparsemux_11_3_32_1_1_U153       |     |        | tmp_6          | sparsemux | compactencoding_dontcare | 0       |
+|   icmp_ln86_3_fu_913_p2            |     |        | icmp_ln86_3    | setgt     | auto                     | 0       |
+|   sparsemux_11_3_32_1_1_U154       |     |        | tmp_7          | sparsemux | compactencoding_dontcare | 0       |
+|   icmp_ln89_3_fu_918_p2            |     |        | icmp_ln89_3    | setgt     | auto                     | 0       |
+|   select_ln89_3_fu_923_p3          |     |        | select_ln89_3  | select    | auto_sel                 | 0       |
+|   tmp_9_fu_971_p14                 |     |        | i1_3           | select    | auto_sel                 | 0       |
+|   tmp_8_fu_944_p14                 |     |        | i0_4           | select    | auto_sel                 | 0       |
+|   sparsemux_13_3_32_1_1_U155       |     |        | tmp_8          | sparsemux | compactencoding_dontcare | 0       |
+|   icmp_ln86_4_fu_1001_p2           |     |        | icmp_ln86_4    | setgt     | auto                     | 0       |
+|   sparsemux_13_3_32_1_1_U156       |     |        | tmp_9          | sparsemux | compactencoding_dontcare | 0       |
+|   icmp_ln89_4_fu_1006_p2           |     |        | icmp_ln89_4    | setgt     | auto                     | 0       |
+|   select_ln89_4_fu_1011_p3         |     |        | select_ln89_4  | select    | auto_sel                 | 0       |
+|   tmp_1_fu_1062_p16                |     |        | i1_4           | select    | auto_sel                 | 0       |
+|   tmp_s_fu_1032_p16                |     |        | i0_5           | select    | auto_sel                 | 0       |
+|   sparsemux_15_3_32_1_1_U157       |     |        | tmp_s          | sparsemux | compactencoding_dontcare | 0       |
+|   icmp_ln86_5_fu_1287_p2           |     |        | icmp_ln86_5    | setgt     | auto                     | 0       |
+|   sparsemux_15_3_32_1_1_U158       |     |        | tmp_1          | sparsemux | compactencoding_dontcare | 0       |
+|   icmp_ln89_5_fu_1292_p2           |     |        | icmp_ln89_5    | setgt     | auto                     | 0       |
+|   select_ln89_5_fu_1297_p3         |     |        | select_ln89_5  | select    | auto_sel                 | 0       |
+|   i1_5_fu_1304_p3                  |     |        | i1_5           | select    | auto_sel                 | 0       |
+|   i0_6_fu_1311_p3                  |     |        | i0_6           | select    | auto_sel                 | 0       |
+|   sparsemux_17_3_32_1_1_U159       |     |        | tmp_10         | sparsemux | compactencoding_dontcare | 0       |
+|   sparsemux_17_3_32_1_1_U160       |     |        | tmp_11         | sparsemux | compactencoding_dontcare | 0       |
+|   sparsemux_17_3_32_1_1_U161       |     |        | tmp_12         | sparsemux | compactencoding_dontcare | 0       |
+|   sparsemux_17_3_32_1_1_U162       |     |        | tmp_13         | sparsemux | compactencoding_dontcare | 0       |
+|   sparsemux_17_3_32_1_1_U163       |     |        | tmp_14         | sparsemux | compactencoding_dontcare | 0       |
+|   sparsemux_17_3_32_1_1_U164       |     |        | tmp_15         | sparsemux | compactencoding_dontcare | 0       |
+|   sparsemux_17_3_32_1_1_U165       |     |        | tmp_16         | sparsemux | compactencoding_dontcare | 0       |
+|   sparsemux_17_3_32_1_1_U166       |     |        | tmp_17         | sparsemux | compactencoding_dontcare | 0       |
+|   sparsemux_17_3_32_1_1_U167       |     |        | tmp_18         | sparsemux | compactencoding_dontcare | 0       |
+|   sparsemux_17_3_32_1_1_U168       |     |        | tmp_19         | sparsemux | compactencoding_dontcare | 0       |
+|   sparsemux_17_3_32_1_1_U169       |     |        | tmp_20         | sparsemux | compactencoding_dontcare | 0       |
+|   sparsemux_17_3_32_1_1_U170       |     |        | tmp_21         | sparsemux | compactencoding_dontcare | 0       |
+|   sparsemux_17_3_32_1_1_U171       |     |        | tmp_22         | sparsemux | compactencoding_dontcare | 0       |
+|   sparsemux_17_3_32_1_1_U172       |     |        | tmp_23         | sparsemux | compactencoding_dontcare | 0       |
+|   sparsemux_17_3_32_1_1_U173       |     |        | tmp_24         | sparsemux | compactencoding_dontcare | 0       |
+|   sparsemux_17_3_32_1_1_U174       |     |        | tmp_25         | sparsemux | compactencoding_dontcare | 0       |
+|   xor_ln134_fu_1980_p2             |     |        | xor_ln134      | xor       | auto                     | 0       |
+|   or_ln134_fu_1986_p2              |     |        | or_ln134       | or        | auto                     | 0       |
+|   select_ln134_fu_2004_p3          |     |        | select_ln134   | select    | auto_sel                 | 0       |
+|   select_ln134_1_fu_2011_p3        |     |        | select_ln134_1 | select    | auto_sel                 | 0       |
+|   icmp_ln137_fu_2018_p2            |     |        | icmp_ln137     | setne     | auto                     | 0       |
+|   select_ln137_fu_2024_p3          |     |        | select_ln137   | select    | auto_sel                 | 0       |
+|   select_ln134_2_fu_2032_p3        |     |        | select_ln134_2 | select    | auto_sel                 | 0       |
+|   select_ln134_3_fu_2040_p3        |     |        | select_ln134_3 | select    | auto_sel                 | 0       |
+|   icmp_ln144_fu_2112_p2            |     |        | icmp_ln144     | setlt     | auto                     | 0       |
+|   a1_1_fu_2116_p3                  |     |        | a1_1           | select    | auto_sel                 | 0       |
+|   a0_1_fu_2123_p3                  |     |        | a0_1           | select    | auto_sel                 | 0       |
+|  + music_doa_Pipeline_Read_Loop    | 0   |        |                |           |                          |         |
+|    icmp_ln74_fu_1055_p2            |     |        | icmp_ln74      | seteq     | auto                     | 0       |
+|    add_ln74_fu_1061_p2             |     |        | add_ln74       | add       | fabric                   | 0       |
+|    icmp_ln77_fu_1081_p2            |     |        | icmp_ln77      | seteq     | auto                     | 0       |
+|    add_ln78_fu_1091_p2             |     |        | add_ln78       | add       | fabric                   | 0       |
+|  + music_doa_Pipeline_Grid_Loop    | 40  |        |                |           |                          |         |
+|    icmp_ln106_fu_457_p2            |     |        | icmp_ln106     | seteq     | auto                     | 0       |
+|    add_ln106_fu_463_p2             |     |        | add_ln106      | add       | fabric                   | 0       |
+|    mul_32s_24s_55_2_1_U79          | 2   |        | mul_ln112      | mul       | auto                     | 1       |
+|    mul_32s_24s_55_2_1_U80          | 2   |        | mul_ln112_1    | mul       | auto                     | 1       |
+|    mul_32s_24s_55_2_1_U85          | 2   |        | mul_ln112_2    | mul       | auto                     | 1       |
+|    mul_32s_24s_55_2_1_U86          | 2   |        | mul_ln112_3    | mul       | auto                     | 1       |
+|    mul_32s_23ns_55_2_1_U77         | 2   |        | mul_ln112_4    | mul       | auto                     | 1       |
+|    mul_32s_24s_55_2_1_U81          | 2   |        | mul_ln112_5    | mul       | auto                     | 1       |
+|    mul_32s_24s_55_2_1_U87          | 2   |        | mul_ln112_6    | mul       | auto                     | 1       |
+|    mul_32s_24s_55_2_1_U88          | 2   |        | mul_ln112_7    | mul       | auto                     | 1       |
+|    add_ln112_1_fu_522_p2           |     |        | add_ln112_1    | add       | fabric                   | 0       |
+|    add_ln112_4_fu_526_p2           |     |        | add_ln112_4    | add       | fabric                   | 0       |
+|    mul_32s_24s_55_2_1_U82          | 2   |        | mul_ln112_8    | mul       | auto                     | 1       |
+|    mul_32s_24s_55_2_1_U83          | 2   |        | mul_ln112_9    | mul       | auto                     | 1       |
+|    mul_32s_24s_55_2_1_U89          | 2   |        | mul_ln112_10   | mul       | auto                     | 1       |
+|    mul_32s_24s_55_2_1_U90          | 2   |        | mul_ln112_11   | mul       | auto                     | 1       |
+|    mul_32s_23ns_55_2_1_U78         | 2   |        | mul_ln112_12   | mul       | auto                     | 1       |
+|    mul_32s_24s_55_2_1_U84          | 2   |        | mul_ln112_13   | mul       | auto                     | 1       |
+|    mul_32s_24s_55_2_1_U91          | 2   |        | mul_ln112_14   | mul       | auto                     | 1       |
+|    mul_32s_24s_55_2_1_U92          | 2   |        | mul_ln112_15   | mul       | auto                     | 1       |
+|    add_ln112_8_fu_530_p2           |     |        | add_ln112_8    | add       | fabric                   | 0       |
+|    add_ln112_11_fu_534_p2          |     |        | add_ln112_11   | add       | fabric                   | 0       |
+|    mul_32s_32s_63_2_1_U93          | 4   |        | mul_ln115      | mul       | auto                     | 1       |
+|    mul_32s_32s_63_2_1_U94          | 4   |        | mul_ln115_1    | mul       | auto                     | 1       |
+|    s_fu_624_p2                     |     |        | s              | add       | fabric                   | 0       |
+|  + music_doa_Pipeline_Peak_Loop    | 0   |        |                |           |                          |         |
+|    icmp_ln125_fu_293_p2            |     |        | icmp_ln125     | seteq     | auto                     | 0       |
+|    g_fu_299_p2                     |     |        | g              | add       | fabric                   | 0       |
+|    icmp_ln127_fu_333_p2            |     |        | icmp_ln127     | setlt     | auto                     | 0       |
+|    next_2_fu_338_p3                |     |        | next_2         | select    | auto_sel                 | 0       |
+|    xor_ln30_fu_346_p2              |     |        | xor_ln30       | xor       | auto                     | 0       |
+|    icmp_ln30_fu_352_p2             |     |        | icmp_ln30      | setlt     | auto                     | 0       |
+|    or_ln30_fu_358_p2               |     |        | or_ln30        | or        | auto                     | 0       |
+|    xor_ln33_fu_364_p2              |     |        | xor_ln33       | xor       | auto                     | 0       |
+|    icmp_ln33_fu_370_p2             |     |        | icmp_ln33      | setlt     | auto                     | 0       |
+|    or_ln33_fu_376_p2               |     |        | or_ln33        | or        | auto                     | 0       |
+|    select_ln33_fu_382_p3           |     |        | select_ln33    | select    | auto_sel                 | 0       |
+|    o1_d_3_fu_389_p3                |     |        | o1_d_3         | select    | auto_sel                 | 0       |
+|    m1_g_2_fu_397_p3                |     |        | m1_g_2         | select    | auto_sel                 | 0       |
+|    o1_g_fu_404_p3                  |     |        | o1_g           | select    | auto_sel                 | 0       |
+|    prev_5_fu_412_p3                |     |        | prev_5         | select    | auto_sel                 | 0       |
+|    o1_d_2_fu_420_p3                |     |        | o1_d_2         | select    | auto_sel                 | 0       |
+|    add_ln129_fu_431_p2             |     |        | add_ln129      | add       | fabric                   | 0       |
+|    icmp_ln129_fu_437_p2            |     |        | icmp_ln129     | setlt     | auto                     | 0       |
+|    icmp_ln129_1_fu_443_p2          |     |        | icmp_ln129_1   | setlt     | auto                     | 0       |
+|    icmp_ln129_2_fu_449_p2          |     |        | icmp_ln129_2   | setlt     | auto                     | 0       |
+|    xor_ln129_1_fu_491_p2           |     |        | xor_ln129_1    | xor       | auto                     | 0       |
+|    and_ln129_fu_496_p2             |     |        | and_ln129      | and       | auto                     | 0       |
+|    and_ln129_1_fu_501_p2           |     |        | and_ln129_1    | and       | auto                     | 0       |
+|    xor_ln30_1_fu_506_p2            |     |        | xor_ln30_1     | xor       | auto                     | 0       |
+|    icmp_ln30_1_fu_512_p2           |     |        | icmp_ln30_1    | setlt     | auto                     | 0       |
+|    or_ln30_1_fu_517_p2             |     |        | or_ln30_1      | or        | auto                     | 0       |
+|    xor_ln33_1_fu_523_p2            |     |        | xor_ln33_1     | xor       | auto                     | 0       |
+|    icmp_ln33_1_fu_529_p2           |     |        | icmp_ln33_1    | setlt     | auto                     | 0       |
+|    or_ln33_1_fu_534_p2             |     |        | or_ln33_1      | or        | auto                     | 0       |
+|    m1_d_3_fu_580_p6                |     |        | m1_d_2         | select    | auto_sel                 | 0       |
+|    m1_g_3_fu_648_p6                |     |        | m1_g_7         | select    | auto_sel                 | 0       |
+|    and_ln30_fu_547_p2              |     |        | and_ln30       | and       | auto                     | 0       |
+|    prev_6_fu_553_p3                |     |        | prev_6         | select    | auto_sel                 | 0       |
+|    m1_g_8_fu_642_p3                |     |        | m1_g_8         | select    | auto_sel                 | 0       |
+|    m0_valid_1_fu_560_p2            |     |        | m0_valid_1     | or        | auto                     | 0       |
+|    xor_ln129_fu_566_p2             |     |        | xor_ln129      | xor       | auto                     | 0       |
+|    sparsemux_7_2_32_1_1_U123       |     |        | m1_d_3         | sparsemux | onehotencoding_realdef   | 0       |
+|    sparsemux_7_2_8_1_1_U125        |     |        | m1_g_3         | sparsemux | onehotencoding_realdef   | 0       |
+|    sparsemux_7_2_1_1_1_U124        |     |        | m1_valid_1     | sparsemux | onehotencoding_realdef   | 0       |
+|  + refine                          | 0   |        |                |           |                          |         |
+|    add_ln41_fu_89_p2               |     |        | add_ln41       | add       | fabric                   | 0       |
+|    icmp_ln41_fu_95_p2              |     |        | icmp_ln41      | setlt     | auto                     | 0       |
+|    add_ln42_fu_110_p2              |     |        | add_ln42       | add       | fabric                   | 0       |
+|    icmp_ln44_fu_155_p2             |     |        | icmp_ln44      | setgt     | auto                     | 0       |
+|    num_fu_160_p2                   |     |        | num            | sub       | fabric                   | 0       |
+|    sub_ln46_fu_178_p2              |     |        | sub_ln46       | sub       | fabric                   | 0       |
+|    select_ln46_fu_184_p3           |     |        | select_ln46    | select    | auto_sel                 | 0       |
+|    udiv_48ns_34ns_32_52_seq_1_U137 |     |        | q              | udiv      | auto_seq                 | 51      |
+|    sub_ln49_fu_218_p2              |     |        | sub_ln49       | sub       | fabric                   | 0       |
+|    select_ln49_fu_224_p3           |     |        | select_ln49    | select    | auto_sel                 | 0       |
+|    add_ln50_fu_229_p2              |     |        | add_ln50       | add       | fabric                   | 0       |
+|    add_ln52_fu_247_p2              |     |        | add_ln52       | add       | fabric                   | 0       |
+|  + music_doa_Pipeline_Out_Loop     | 0   |        |                |           |                          |         |
+|    icmp_ln152_fu_133_p2            |     |        | icmp_ln152     | seteq     | auto                     | 0       |
+|    add_ln152_fu_139_p2             |     |        | add_ln152      | add       | fabric                   | 0       |
+|    icmp_ln155_fu_145_p2            |     |        | icmp_ln155     | seteq     | auto                     | 0       |
+|    a_fu_195_p3                     |     |        | a              | select    | auto_sel                 | 0       |
+|    icmp_ln156_fu_161_p2            |     |        | icmp_ln156     | seteq     | auto                     | 0       |
+|    add_ln156_fu_167_p2             |     |        | add_ln156      | add       | fabric                   | 0       |
+|    d_out_TDATA                     |     |        | p_0            | select    | auto_sel                 | 0       |
+|    icmp_ln159_fu_178_p2            |     |        | icmp_ln159     | seteq     | auto                     | 0       |
+|    and_ln159_fu_184_p2             |     |        | and_ln159      | and       | auto                     | 0       |
++------------------------------------+-----+--------+----------------+-----------+--------------------------+---------+
+
+
+================================================================
+== Storage Report
+================================================================
++---------------------------------+--------------+-----------+------+------+--------+--------------+------+---------+------------------+
+| Name                            | Usage        | Type      | BRAM | URAM | Pragma | Variable     | Impl | Latency | Bitwidth, Depth, |
+|                                 |              |           |      |      |        |              |      |         | Banks            |
++---------------------------------+--------------+-----------+------+------+--------+--------------+------+---------+------------------+
+| + music_doa                     |              |           | 10   | 0    |        |              |      |         |                  |
+|   control_s_axi_U               | interface    | s_axilite |      |      |        |              |      |         |                  |
+|   D_U                           | ram_2p array |           | 2    |      |        | D            | auto | 1       | 32, 181, 1       |
+|  + music_doa_Pipeline_Grid_Loop |              |           | 8    | 0    |        |              |      |         |                  |
+|    p_ZL5B_ROM_0_U               | rom_1p       |           | 1    |      |        | p_ZL5B_ROM_0 | auto | 1       | 24, 181, 1       |
+|    p_ZL5B_ROM_1_U               | rom_1p       |           | 1    |      |        | p_ZL5B_ROM_1 | auto | 1       | 24, 181, 1       |
+|    p_ZL5B_ROM_2_U               | rom_1p       |           | 1    |      |        | p_ZL5B_ROM_2 | auto | 1       | 24, 181, 1       |
+|    p_ZL5B_ROM_3_U               | rom_1p       |           | 1    |      |        | p_ZL5B_ROM_3 | auto | 1       | 23, 181, 1       |
+|    p_ZL5B_ROM_4_U               | rom_1p       |           | 1    |      |        | p_ZL5B_ROM_4 | auto | 1       | 24, 181, 1       |
+|    p_ZL5B_ROM_5_U               | rom_1p       |           | 1    |      |        | p_ZL5B_ROM_5 | auto | 1       | 24, 181, 1       |
+|    p_ZL5B_ROM_6_U               | rom_1p       |           | 1    |      |        | p_ZL5B_ROM_6 | auto | 1       | 24, 181, 1       |
+|    p_ZL5B_ROM_7_U               | rom_1p       |           | 1    |      |        | p_ZL5B_ROM_7 | auto | 1       | 24, 181, 1       |
++---------------------------------+--------------+-----------+------+------+--------+--------------+------+---------+------------------+
+
+
+================================================================
+== Pragma Report
+================================================================
+* Valid Pragma Syntax
++-----------------+-------------------------------------------+----------------------------------+
+| Type            | Options                                   | Location                         |
++-----------------+-------------------------------------------+----------------------------------+
+| INLINE          |                                           | in insert2 (music_doa.cpp:29)    |
+| INLINE          | off                                       | in refine (music_doa.cpp:39)     |
+| INTERFACE       | mode=axis port=e_in                       | in music_doa (music_doa.cpp:56)  |
+| INTERFACE       | mode=axis port=d_out                      | in music_doa (music_doa.cpp:57)  |
+| INTERFACE       | mode=s_axilite port=batch bundle=control  | in music_doa (music_doa.cpp:58)  |
+| INTERFACE       | mode=s_axilite port=return bundle=control | in music_doa (music_doa.cpp:59)  |
+| ARRAY_PARTITION | variable=B_ROM type=complete dim=1        | in music_doa (music_doa.cpp:66)  |
+| ARRAY_PARTITION | variable=lam type=complete                | in music_doa (music_doa.cpp:70)  |
+| ARRAY_PARTITION | variable=V type=complete dim=0            | in music_doa (music_doa.cpp:71)  |
+| PIPELINE        | ii=1                                      | in music_doa (music_doa.cpp:75)  |
+| UNROLL          |                                           | in music_doa (music_doa.cpp:85)  |
+| ARRAY_PARTITION | variable=E type=complete dim=0            | in music_doa (music_doa.cpp:94)  |
+| UNROLL          |                                           | in music_doa (music_doa.cpp:97)  |
+| PIPELINE        | ii=1                                      | in music_doa (music_doa.cpp:107) |
+| PIPELINE        | ii=1                                      | in music_doa (music_doa.cpp:126) |
+| PIPELINE        | ii=1                                      | in music_doa (music_doa.cpp:153) |
++-----------------+-------------------------------------------+----------------------------------+
+
+

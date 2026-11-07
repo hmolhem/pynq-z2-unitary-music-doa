@@ -32,3 +32,6 @@ jobs:
       - name: Jacobi EVD kernel
         working-directory: hls
         run: make csim-jacobi AP_INCLUDE="$RUNNER_TEMP/ap_types/include"
+      - name: MUSIC + peak-search kernel
+        working-directory: hls
+        run: make csim-music AP_INCLUDE="$RUNNER_TEMP/ap_types/include"
