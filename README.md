@@ -11,7 +11,8 @@ for an 8-element MIMO virtual array on the PYNQ-Z2 (Zynq-7020).
 > | HLS: unitary transform + real SCM | Vitis csim/cosim bit-exact, 1106 cycles (11.1 us), timing met, IP exported |
 > | HLS: Jacobi EVD (CORDIC, 4 sweeps) | Vitis csim/cosim bit-exact, ~9,061 cycles (91 us), IP exported |
 > | **Tier 2 on the board** (SCM + Jacobi on FPGA, MUSIC on ARM) | **PASS: 20/20 frames bit-exact, DOA correct incl. coherent sources, WNS +0.892 ns** ([results](results/board/2026-10-20_tier2_overlay.md)) |
-> | HLS: MUSIC + peak search (Tier 3) | g++ csim bit-exact (25 frames); whole fixed-point estimator = float DOA in 200-trial Monte Carlo; Vitis run pending |
+> | HLS: MUSIC + peak search (Tier 3) | Vitis csim/cosim bit-exact, avg 758 cycles, 40 DSP |
+> | **Tier 3 on the board** (whole estimator on the FPGA) | **PASS: 20/20 frames bit-exact, Monte Carlo through the board, 784 us vs 2544 us NumPy (3.2x), 9,612 frames/s batched, WNS +0.623 ns** ([results](results/board/2026-11-07_tier3_overlay.md)) |
 > | Board bring-up: AXI DMA loopback | PASS on PYNQ-Z2 (Vivado 2025.2 overlay on PYNQ 2.5) |
 > | **Tier 1 on the board** (SCM on FPGA, MUSIC on ARM) | **PASS: 50/50 frames bit-exact, DOA correct incl. coherent sources** ([results](results/board/2026-10-17_scm_overlay.md)) |
 

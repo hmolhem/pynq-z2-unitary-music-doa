@@ -4,7 +4,7 @@
 |---|---|---|
 | Unitary transform + real SCM | `scm/` | Vitis 2025.2: csim PASS, synthesis, cosim PASS (bit-exact), IP exported |
 | Jacobi EVD (PCA) | `jacobi/` | Vitis 2025.2: csim PASS, synthesis, cosim PASS (bit-exact), IP exported; on board bit-exact |
-| MUSIC denominator + peaks | `music/` | g++ csim PASS (bit-exact, 25 frames); Vitis run pending |
+| MUSIC denominator + peaks | `music/` | Vitis 2025.2: csim PASS, synthesis, cosim PASS (bit-exact), IP exported; on board bit-exact |
 | Top-level IP | `top/` | Not started |
 
 ## `scm/` -- unitary transform + real-valued SCM
