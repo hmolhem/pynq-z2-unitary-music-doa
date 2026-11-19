@@ -71,6 +71,15 @@ def main(out_dir):
                            linewidths=0, zorder=2 if k == "slice" else 3)
         ax.scatter([], [], s=12, marker="s", c=color, label=LABELS[block])
 
+    # the hard processing system occupies the empty top-left corner of the fabric
+    xs_all = [int(s["rpm_x"]) for s in all_sites]
+    ys_all = [int(s["rpm_y"]) for s in all_sites]
+    y_mid = (min(ys_all) + max(ys_all)) / 2
+    x_ps = min(int(s["rpm_x"]) for s in all_sites if int(s["rpm_y"]) > y_mid)
+    y_ps = max([int(s["rpm_y"]) for s in all_sites if int(s["rpm_x"]) < x_ps] or [min(ys_all)])
+    if x_ps > min(xs_all):
+        ax.text((min(xs_all) + x_ps) / 2, (y_ps + max(ys_all)) / 2, "Processing\nsystem\n(ARM, DDR\ncontroller)",
+                ha="center", va="center", fontsize=7, style="italic", color="#555555")
     ax.set_aspect("equal")
     ax.set_xticks([])
     ax.set_yticks([])
@@ -79,8 +88,8 @@ def main(out_dir):
     ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.01), ncol=2, frameon=False,
               handletextpad=0.3, columnspacing=0.8, fontsize=7)
     fig.tight_layout(pad=0.2)
-    fig.savefig(out / "floorplan_tier3.pdf")
-    fig.savefig(out / "floorplan_tier3.png", dpi=300)
+    fig.savefig(out / "floorplan_tier3.pdf", bbox_inches="tight", pad_inches=0.02)
+    fig.savefig(out / "floorplan_tier3.png", dpi=300, bbox_inches="tight", pad_inches=0.02)
 
     # short summary for the text
     per_block = Counter((s["block"], kind(s["site_type"])) for s in used)
