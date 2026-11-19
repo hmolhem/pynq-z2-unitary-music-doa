@@ -1,0 +1,37 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025
+| Date         : Thu Nov 19 17:38:14 2026
+| Host         : hosseinmolhem running 64-bit major release  (build 9200)
+| Command      : report_utilization -hierarchical -hierarchical_depth 2 -file C:/MyDocument/pynq-z2-unitary-music-doa/vivado/tier3_overlay/output/utilization_hier.rpt
+| Design       : tier3_overlay_wrapper
+| Device       : xc7z020clg400-1
+| Speed File   : -1
+| Design State : Routed
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Utilization Design Information
+
+Table of Contents
+-----------------
+1. Utilization by Hierarchy
+
+1. Utilization by Hierarchy
+---------------------------
+
++-----------------------+----------------------------------+------------+------------+---------+------+-------+--------+--------+------------+
+|        Instance       |              Module              | Total LUTs | Logic LUTs | LUTRAMs | SRLs |  FFs  | RAMB36 | RAMB18 | DSP Blocks |
++-----------------------+----------------------------------+------------+------------+---------+------+-------+--------+--------+------------+
+| tier3_overlay_wrapper |                            (top) |      24332 |      23719 |     420 |  193 | 21792 |      3 |      8 |        160 |
+|   tier3_overlay_i     |                    tier3_overlay |      24332 |      23719 |     420 |  193 | 21792 |      3 |      8 |        160 |
+|     scm_unitary_0     |    tier3_overlay_scm_unitary_0_0 |       2517 |       2517 |       0 |    0 |  3038 |      0 |      0 |         72 |
+|     axi_dma_0         |        tier3_overlay_axi_dma_0_0 |       1385 |       1278 |       8 |   99 |  2029 |      2 |      0 |          0 |
+|     axi_smc           |          tier3_overlay_axi_smc_0 |       2153 |       1719 |     412 |   22 |  3032 |      0 |      0 |          0 |
+|     axi_timer_0       |      tier3_overlay_axi_timer_0_0 |        288 |        288 |       0 |    0 |   240 |      0 |      0 |          0 |
+|     jacobi_evd_0      |     tier3_overlay_jacobi_evd_0_0 |      13724 |      13722 |       0 |    2 |  7728 |      0 |      0 |         48 |
+|     music_doa_0       |      tier3_overlay_music_doa_0_0 |       3664 |       3656 |       0 |    8 |  5033 |      1 |      8 |         40 |
+|     ps7_0_axi_periph  | tier3_overlay_ps7_0_axi_periph_0 |        589 |        528 |       0 |   61 |   659 |      0 |      0 |          0 |
++-----------------------+----------------------------------+------------+------------+---------+------+-------+--------+--------+------------+
+* Note: The sum of lower-level cells may be larger than their parent cells total, due to cross-hierarchy LUT combining
+
+
