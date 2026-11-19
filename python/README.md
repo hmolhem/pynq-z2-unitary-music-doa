@@ -26,6 +26,7 @@ Bit-true models (must match the HLS output bit for bit):
 | `music_bitexact.py` | Integer-exact model of `hls/music` (steering ROM, MUSIC denominator, peak search) |
 | `gen_music_vectors.py` | Writes `hls/music/music_rom.h` and the `hls/music/tb` test vectors |
 | `sweep_tier3_chain.py` | Monte Carlo: whole estimator in fixed point vs float -> `results/tier3_chain_vs_float.csv` |
+| `phase_sweep.py` | Coherent sources: resolution probability of the bit-exact Tier 3 chain vs. relative phase (0, 10, 20 dB; 100 trials per point, fixed seeds) -> `results/phase_sweep.csv`, `.pdf`, `.png` |
 | `dse_cordic.py` | CORDIC iterations (12-24) vs eigenvalue error and DOA accuracy -> `results/dse_cordic.csv` |
 | `dse_wordlength.py` | Word lengths scaled from configuration B (6-16-bit input) vs DOA accuracy -> `results/dse_wordlength.csv` |
 
